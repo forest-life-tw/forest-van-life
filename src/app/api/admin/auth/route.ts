@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { createAdminToken, COOKIE_NAME } from "@/lib/auth";
 
+export async function GET() {
+  return NextResponse.json({
+    pwd_set: !!process.env.ADMIN_PASSWORD,
+    pwd_len: process.env.ADMIN_PASSWORD?.length ?? 0,
+    test_match: process.env.ADMIN_PASSWORD === "ForestLife",
+  });
+}
+
 export async function POST(req: Request) {
   const { password } = await req.json();
   if (password !== process.env.ADMIN_PASSWORD) {
