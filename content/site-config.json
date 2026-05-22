@@ -1,0 +1,54 @@
+{
+  "homepage": {
+    "heroTitle": "把車輛改成移動的家，\n每一道工序都查得到法規。",
+    "heroSubtitle": "專注貨車、客貨車的合法露營改裝。從座位變更、車內木作、副電池到駐車冷氣，我們把每項改裝對應的法源、變更登記流程、驗車要點全部整理清楚，讓你在動工之前就知道未來能不能上路。",
+    "features": [
+      { "icon": "📋", "title": "法規依據齊全", "desc": "每一項改裝對應道安規則條文與監理流程，不打模糊仗。" },
+      { "icon": "✅", "title": "驗車過得了", "desc": "從設計階段就考慮驗車要求，不會做完才發現過不了。" },
+      { "icon": "🔧", "title": "保固與後續", "desc": "施工有保固，未來轉售、過戶都有完整紀錄可查。" }
+    ]
+  },
+  "contact": {
+    "phone": "",
+    "address": "台南市永康區中山南路218號",
+    "lineUrl": "https://line.me/R/ti/p/@137ktawk?oat_content=url",
+    "businessHours": ""
+  },
+  "cars": [
+    {
+      "slug": "staria",
+      "name": "Hyundai Staria",
+      "note": "貨車版 / Camper",
+      "description": "Hyundai Staria 是目前台灣最受歡迎的改裝底盤之一，空間寬敞、車身高度充裕，非常適合全尺寸臥鋪與完整廚具配置。",
+      "images": []
+    },
+    {
+      "slug": "hiace",
+      "name": "Toyota Hiace",
+      "note": "經典商用底盤",
+      "description": "Toyota Hiace 是全球最廣泛使用的商用廂車之一，耐用性高、零件取得容易，是長途露營改裝的可靠選擇。",
+      "images": []
+    },
+    {
+      "slug": "combo",
+      "name": "Opel Combo",
+      "note": "歐系小型廂車",
+      "description": "Opel Combo 車身緊湊、停車方便，適合日常通勤兼週末車宿的使用模式，改裝後可維持一般轎車的機動性。",
+      "images": []
+    },
+    {
+      "slug": "caddy",
+      "name": "VW Caddy",
+      "note": "德系緊湊",
+      "description": "VW Caddy 以德系工藝著稱，底盤穩定性佳，適合追求駕駛質感的改裝車主，車內空間利用率高。",
+      "images": []
+    },
+    {
+      "slug": "j-space",
+      "name": "CMC J-Space",
+      "note": "國產輕商用",
+      "description": "CMC J-Space 是台灣自製輕商用車，國產維修方便、保固完整，2024年上市後銷量近1.7萬輛，是預算友善的入門改裝選擇。",
+      "images": []
+    }
+  ]
+}
