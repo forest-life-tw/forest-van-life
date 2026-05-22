@@ -5,9 +5,6 @@ import { verifyAdminToken, COOKIE_NAME } from "@/lib/auth";
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname === "/admin/login") return NextResponse.next();
-  if (pathname === "/api/admin/auth") return NextResponse.next();
-
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
     const token = request.cookies.get(COOKIE_NAME)?.value;
     if (!token || !(await verifyAdminToken(token))) {
