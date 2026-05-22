@@ -1,14 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminToken, COOKIE_NAME } from "@/lib/auth";
 
-export async function GET() {
-  return NextResponse.json({
-    pwd_set: !!process.env.ADMIN_PASSWORD,
-    pwd_len: process.env.ADMIN_PASSWORD?.length ?? 0,
-    test_match: process.env.ADMIN_PASSWORD === "ForestLife",
-  });
-}
-
 export async function POST(req: Request) {
   try {
     const { password } = await req.json();
@@ -25,8 +17,8 @@ export async function POST(req: Request) {
       path: "/",
     });
     return res;
-  } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
 

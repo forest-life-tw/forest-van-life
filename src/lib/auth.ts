@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
 const SECRET = new TextEncoder().encode(
-  process.env.ADMIN_JWT_SECRET ?? "forest-van-life-change-in-prod"
+  process.env.ADMIN_JWT_SECRET || "forest-van-life-change-in-prod"
 );
 
 export const COOKIE_NAME = "fvl_admin";
