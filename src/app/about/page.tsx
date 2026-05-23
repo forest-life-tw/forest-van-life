@@ -64,16 +64,10 @@ export default function AboutPage() {
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <a
-            href="tel:+886000000000"
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-emerald-700 px-5 py-3 font-medium text-white transition-colors hover:bg-emerald-800"
-          >
-            📞 [電話待填]
-          </a>
-          <a
             href="https://line.me/R/ti/p/@137ktawk?oat_content=url"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-emerald-700 px-5 py-3 font-medium text-emerald-700 transition-colors hover:bg-emerald-100"
+            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-emerald-700 px-5 py-3 font-medium text-white transition-colors hover:bg-emerald-800"
           >
             💬 LINE 諮詢
           </a>

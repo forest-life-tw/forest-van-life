@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 
-type Contact = { phone: string; address: string; lineUrl: string; businessHours: string };
+type Contact = { address: string; lineUrl: string; businessHours: string };
 
 export default function SettingsPage() {
-  const [contact, setContact] = useState<Contact>({ phone: "", address: "", lineUrl: "", businessHours: "" });
+  const [contact, setContact] = useState<Contact>({ address: "", lineUrl: "", businessHours: "" });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -43,10 +43,6 @@ export default function SettingsPage() {
 
       <div className="rounded-xl border border-stone-200 bg-white p-6 space-y-5">
         <h2 className="font-semibold text-stone-800">聯絡資訊</h2>
-        <Field label="電話">
-          <input value={contact.phone} onChange={(e) => set("phone", e.target.value)}
-            className="input" placeholder="例：06-123-4567" />
-        </Field>
         <Field label="地址">
           <input value={contact.address} onChange={(e) => set("address", e.target.value)}
             className="input" />
