@@ -83,7 +83,13 @@
       "name": "CMC J-Space",
       "note": "國產輕商用",
       "description": "CMC J-Space 是台灣自製輕商用車，國產維修方便、保固完整，2024年上市後銷量近1.7萬輛，是預算友善的入門改裝選擇。",
-      "images": []
+      "images": [],
+      "imageGroups": [
+        {
+          "name": "新分類",
+          "images": []
+        }
+      ]
     }
   ]
 }
