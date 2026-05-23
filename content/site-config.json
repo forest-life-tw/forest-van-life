@@ -53,8 +53,12 @@
       "name": "Hyundai Staria",
       "note": "貨車版 / Camper",
       "description": "Hyundai Staria 是目前台灣最受歡迎的改裝底盤之一，空間寬敞、車身高度充裕，非常適合全尺寸臥鋪與完整廚具配置。\n\n我們有配合\n",
-      "images": [
-        "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/staria/1779514559015.png"
+      "images": [],
+      "imageGroups": [
+        {
+          "name": "改裝實績",
+          "images": []
+        }
       ]
     },
     {
