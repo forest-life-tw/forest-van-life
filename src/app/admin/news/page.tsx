@@ -27,6 +27,7 @@ export default function NewsAdminPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [deleteTarget, setDeleteTarget] = useState<NewsItem | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
     fetch("/api/admin/news")
@@ -42,35 +43,48 @@ export default function NewsAdminPage() {
   }
 
   async function submit() {
-    if (!form.title.trim() || !form.url.trim() || !form.sourceName.trim() || !form.date) return;
-    setSubmitting(true);
-    const res = await fetch("/api/admin/news", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setItems((prev) => [data.item, ...prev]);
-      setShowForm(false);
-      setForm({ ...EMPTY_FORM, date: new Date().toISOString().slice(0, 10) });
-      markBuildTriggered();
-    } else {
-      alert("新增失敗，請稍後再試");
+    if (!form.title.trim() || !form.url.trim() || !form.sourceName.trim() || !form.date) {
+      setSubmitError("請填寫標題、連結、來源名稱、日期");
+      return;
     }
-    setSubmitting(false);
+    setSubmitError("");
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/news", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setItems((prev) => [data.item, ...prev]);
+        setShowForm(false);
+        setForm({ ...EMPTY_FORM, date: new Date().toISOString().slice(0, 10) });
+        markBuildTriggered();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setSubmitError(err.error === "missing fields" ? "請填寫必填欄位" : "儲存失敗，請稍後再試");
+      }
+    } catch {
+      setSubmitError("網路錯誤，請檢查連線後重試");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   async function executeDelete() {
     if (!deleteTarget) return;
     setDeleting(true);
-    const res = await fetch(`/api/admin/news/${deleteTarget.id}`, { method: "DELETE" });
-    if (res.ok) {
-      setItems((prev) => prev.filter((item) => item.id !== deleteTarget.id));
-      setDeleteTarget(null);
-      markBuildTriggered();
-    } else {
-      alert("刪除失敗");
+    try {
+      const res = await fetch(`/api/admin/news/${deleteTarget.id}`, { method: "DELETE" });
+      if (res.ok) {
+        setItems((prev) => prev.filter((item) => item.id !== deleteTarget.id));
+        setDeleteTarget(null);
+        markBuildTriggered();
+      } else {
+        setDeleting(false);
+      }
+    } catch {
       setDeleting(false);
     }
   }
@@ -85,6 +99,7 @@ export default function NewsAdminPage() {
         <button
           onClick={() => {
             setForm({ ...EMPTY_FORM, date: new Date().toISOString().slice(0, 10) });
+            setSubmitError("");
             setShowForm(true);
           }}
           className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800"
@@ -212,6 +227,11 @@ export default function NewsAdminPage() {
                 />
               </Field>
             </div>
+            {submitError && (
+              <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">
+                {submitError}
+              </p>
+            )}
             <div className="mt-5 flex gap-3">
               <button
                 onClick={submit}

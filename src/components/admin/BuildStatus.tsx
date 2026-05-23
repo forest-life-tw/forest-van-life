@@ -1,16 +1,18 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { BuildStatusResponse, DeploymentStatus } from "@/app/api/admin/build-status/route";
-import { isRecentBuild } from "@/lib/build-signal";
+import { isRecentBuild, BUILD_EVENT } from "@/lib/build-signal";
 
 const ACTIVE_STATES: DeploymentStatus[] = ["QUEUED", "BUILDING"];
 const POLL_ACTIVE = 5_000;
 const POLL_IDLE = 30_000;
 const READY_DISMISS_MS = 12_000;
+const FORCE_FAST_MS = 3 * 60 * 1000;
 
 export default function BuildStatus() {
   const [status, setStatus] = useState<DeploymentStatus>("UNKNOWN");
   const [showReady, setShowReady] = useState(false);
+  const [fastUntil, setFastUntil] = useState(0);
   const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const poll = useCallback(async () => {
@@ -20,7 +22,6 @@ export default function BuildStatus() {
       const data: BuildStatusResponse = await res.json();
       setStatus((prev) => {
         if (data.status === "READY" && ACTIVE_STATES.includes(prev)) {
-          // 從 building → ready：顯示完成提示
           setShowReady(true);
           if (dismissTimer.current) clearTimeout(dismissTimer.current);
           dismissTimer.current = setTimeout(() => setShowReady(false), READY_DISMISS_MS);
@@ -32,12 +33,24 @@ export default function BuildStatus() {
     }
   }, []);
 
+  // 立刻切換 fast-poll：收到 build 觸發事件
+  useEffect(() => {
+    const handle = () => {
+      setFastUntil(Date.now() + FORCE_FAST_MS);
+      poll();
+    };
+    window.addEventListener(BUILD_EVENT, handle);
+    return () => window.removeEventListener(BUILD_EVENT, handle);
+  }, [poll]);
+
+  // 輪詢排程：status 或 fastUntil 改變時重設 interval
   useEffect(() => {
     poll();
-    const fast = ACTIVE_STATES.includes(status) || isRecentBuild();
+    const fast =
+      ACTIVE_STATES.includes(status) || isRecentBuild() || Date.now() < fastUntil;
     const id = setInterval(poll, fast ? POLL_ACTIVE : POLL_IDLE);
     return () => clearInterval(id);
-  }, [poll, status]);
+  }, [poll, status, fastUntil]);
 
   useEffect(() => {
     return () => { if (dismissTimer.current) clearTimeout(dismissTimer.current); };
