@@ -5,6 +5,7 @@ import { getSiteConfig } from "@/lib/config";
 const NAV = [
   { href: "/laws", label: "常見問題 Knowhow" },
   { href: "/cars", label: "車型專區" },
+  { href: "/news", label: "露營大小事" },
   { href: "/about", label: "關於我們" },
 ];
 

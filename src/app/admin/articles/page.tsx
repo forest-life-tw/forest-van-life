@@ -1,18 +1,46 @@
 import Link from "next/link";
 import { listDocs } from "@/lib/markdown";
 
+const CATS = [
+  { id: "all", label: "全部" },
+  { id: "design", label: "構思設計" },
+  { id: "laws", label: "法規制度" },
+  { id: "others", label: "其他" },
+] as const;
+
+type CatId = (typeof CATS)[number]["id"];
+
 const CAT_LABEL: Record<string, string> = {
   design: "構思設計",
   laws: "法規制度",
   others: "其他",
 };
 
-export default function ArticlesAdminPage() {
+export default async function ArticlesAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cat?: string }>;
+}) {
+  const { cat } = await searchParams;
+  const activeCat: CatId = (["design", "laws", "others"] as string[]).includes(
+    cat ?? "",
+  )
+    ? (cat as CatId)
+    : "all";
+
+  const byCategory = {
+    design: listDocs("design"),
+    laws: listDocs("laws"),
+    others: listDocs("others"),
+  };
+
   const all = [
-    ...listDocs("design").map((d) => ({ ...d, category: "design" })),
-    ...listDocs("laws").map((d) => ({ ...d, category: "laws" })),
-    ...listDocs("others").map((d) => ({ ...d, category: "others" })),
+    ...byCategory.design.map((d) => ({ ...d, category: "design" as const })),
+    ...byCategory.laws.map((d) => ({ ...d, category: "laws" as const })),
+    ...byCategory.others.map((d) => ({ ...d, category: "others" as const })),
   ];
+
+  const filtered = activeCat === "all" ? all : all.filter((d) => d.category === activeCat);
 
   return (
     <div>
@@ -26,9 +54,42 @@ export default function ArticlesAdminPage() {
         </Link>
       </div>
 
-      <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
-        {all.length === 0 ? (
-          <p className="p-8 text-center text-stone-400">尚無文章</p>
+      {/* Category tabs */}
+      <div className="flex gap-1 border-b border-stone-200">
+        {CATS.map((c) => {
+          const count =
+            c.id === "all"
+              ? all.length
+              : byCategory[c.id as keyof typeof byCategory].length;
+          const isActive = activeCat === c.id;
+          return (
+            <Link
+              key={c.id}
+              href={c.id === "all" ? "/admin/articles" : `/admin/articles?cat=${c.id}`}
+              className={`relative -mb-px rounded-t-lg border px-5 py-2.5 text-sm font-medium transition-colors ${
+                isActive
+                  ? "border-stone-200 border-b-white bg-white text-emerald-700"
+                  : "border-transparent text-stone-500 hover:bg-stone-50 hover:text-stone-700"
+              }`}
+            >
+              {c.label}
+              <span
+                className={`ml-1.5 rounded-full px-1.5 py-0.5 text-xs ${
+                  isActive
+                    ? "bg-emerald-100 text-emerald-600"
+                    : "bg-stone-100 text-stone-500"
+                }`}
+              >
+                {count}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className="overflow-hidden rounded-b-xl rounded-tr-xl border border-t-0 border-stone-200 bg-white">
+        {filtered.length === 0 ? (
+          <p className="p-8 text-center text-stone-400">此分類尚無文章</p>
         ) : (
           <table className="w-full text-sm">
             <thead className="border-b border-stone-200 bg-stone-50 text-left text-xs text-stone-500">
@@ -36,11 +97,11 @@ export default function ArticlesAdminPage() {
                 <th className="px-4 py-3 font-medium">標題</th>
                 <th className="px-4 py-3 font-medium">分類</th>
                 <th className="px-4 py-3 font-medium">更新日期</th>
-                <th className="px-4 py-3 font-medium w-20"></th>
+                <th className="w-20 px-4 py-3 font-medium"></th>
               </tr>
             </thead>
             <tbody>
-              {all.map((doc, i) => (
+              {filtered.map((doc, i) => (
                 <tr key={doc.slug} className={i > 0 ? "border-t border-stone-100" : ""}>
                   <td className="px-4 py-3 font-medium text-stone-900">{doc.title}</td>
                   <td className="px-4 py-3 text-stone-500">{CAT_LABEL[doc.category]}</td>
@@ -48,7 +109,7 @@ export default function ArticlesAdminPage() {
                   <td className="px-4 py-3">
                     <Link
                       href={`/admin/articles/${doc.slug}?cat=${doc.category}`}
-                      className="text-emerald-700 hover:text-emerald-800 font-medium"
+                      className="font-medium text-emerald-700 hover:text-emerald-800"
                     >
                       編輯
                     </Link>

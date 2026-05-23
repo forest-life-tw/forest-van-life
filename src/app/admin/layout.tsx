@@ -7,6 +7,7 @@ import BuildStatus from "@/components/admin/BuildStatus";
 const NAV = [
   { href: "/admin", label: "總覽", icon: "▤" },
   { href: "/admin/articles", label: "文章管理", icon: "✎" },
+  { href: "/admin/news", label: "露營大小事", icon: "📰" },
   { href: "/admin/cars", label: "車型管理", icon: "🚐" },
   { href: "/admin/settings", label: "網站設定", icon: "⚙" },
 ];
