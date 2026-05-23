@@ -91,6 +91,7 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
       const fd = new FormData();
       fd.append("file", file);
       fd.append("carSlug", slug);
+      fd.append("groupName", car.imageGroups[groupIdx].name);
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
       if (res.ok) {
         const { url } = await res.json();

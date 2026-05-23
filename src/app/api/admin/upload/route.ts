@@ -15,7 +15,11 @@ export async function POST(req: Request) {
   if (type === "logo") {
     filename = `logo/logo.${ext}`;
   } else if (carSlug) {
-    filename = `cars/${carSlug}/${Date.now()}.${ext}`;
+    const groupName = form.get("groupName") as string | null;
+    const safeGroup = groupName ? groupName.replace(/[/\\?%*:|"<>]/g, "").trim() : "";
+    filename = safeGroup
+      ? `cars/${carSlug}/${safeGroup}-${Date.now()}.${ext}`
+      : `cars/${carSlug}/${Date.now()}.${ext}`;
   } else {
     return NextResponse.json({ error: "missing type or carSlug" }, { status: 400 });
   }

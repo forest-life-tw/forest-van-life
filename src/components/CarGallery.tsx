@@ -62,7 +62,7 @@ export default function CarGallery({ imageGroups, images = [], carName }: Props)
           >
             <Image
               src={url}
-              alt={`${carName} ${current.name} ${i + 1}`}
+              alt={`${carName} ${current.name} ${i + 1} - 森活家露營車改裝實績`}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 640px) 50vw, 33vw"
