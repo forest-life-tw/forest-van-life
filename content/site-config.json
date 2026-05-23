@@ -66,7 +66,24 @@
       "name": "Toyota Hiace",
       "note": "經典商用底盤",
       "description": "Toyota Hiace 是全球最廣泛使用的商用廂車之一，耐用性高、零件取得容易，是長途露營改裝的可靠選擇。",
-      "images": []
+      "images": [],
+      "imageGroups": [
+        {
+          "name": "全床大空間(收納、水槽)",
+          "images": [
+            "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/hiace/%E6%96%B0%E5%88%86%E9%A1%9E-1779544085537.JPG",
+            "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/hiace/%E6%96%B0%E5%88%86%E9%A1%9E-1779544092628.JPG",
+            "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/hiace/%E6%96%B0%E5%88%86%E9%A1%9E-1779544100284.JPG"
+          ]
+        },
+        {
+          "name": "前後分區(多功能)",
+          "images": [
+            "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/hiace/%E6%96%B0%E5%88%86%E9%A1%9E-1779544113519.JPG",
+            "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/hiace/%E6%96%B0%E5%88%86%E9%A1%9E-1779544120548.JPG"
+          ]
+        }
+      ]
     },
     {
       "slug": "combo",
