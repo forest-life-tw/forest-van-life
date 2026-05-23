@@ -11,6 +11,7 @@ export type NewsItem = {
   sourceName: string;
   date: string;
   note?: string;
+  thumbnail?: string;
 };
 
 export function getNewsItems(): NewsItem[] {

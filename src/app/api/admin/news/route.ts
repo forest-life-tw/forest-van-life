@@ -14,7 +14,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const { title, url, type, sourceName, date, note } = await req.json();
+  const { title, url, type, sourceName, date, note, thumbnail } = await req.json();
   if (!title || !url || !type || !sourceName || !date) {
     return NextResponse.json({ error: "missing fields" }, { status: 400 });
   }
@@ -23,6 +23,7 @@ export async function POST(req: Request) {
   const existing = file ? JSON.parse(file.content) : { items: [] };
   const items: unknown[] = Array.isArray(existing.items) ? existing.items : [];
 
+  const thumbTrimmed = (thumbnail ?? "").trim();
   const newItem = {
     id: Date.now().toString(),
     title: title.trim(),
@@ -31,6 +32,7 @@ export async function POST(req: Request) {
     sourceName: sourceName.trim(),
     date,
     note: (note ?? "").trim(),
+    ...(thumbTrimmed ? { thumbnail: thumbTrimmed } : {}),
   };
   items.unshift(newItem);
 

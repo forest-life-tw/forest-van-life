@@ -17,6 +17,7 @@ const EMPTY_FORM = {
   sourceName: "",
   date: new Date().toISOString().slice(0, 10),
   note: "",
+  thumbnail: "",
 };
 
 export default function NewsAdminPage() {
@@ -218,6 +219,17 @@ export default function NewsAdminPage() {
                   type="date"
                 />
               </Field>
+              {form.type !== "youtube" && (
+                <Field label="縮圖 URL（選填）">
+                  <input
+                    value={form.thumbnail}
+                    onChange={(e) => setField("thumbnail", e.target.value)}
+                    className="input"
+                    placeholder="https://... 可右鍵貼文圖片→複製圖片網址"
+                    type="url"
+                  />
+                </Field>
+              )}
               <Field label="備註（選填）">
                 <input
                   value={form.note}

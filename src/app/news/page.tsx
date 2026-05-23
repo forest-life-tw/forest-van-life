@@ -2,11 +2,34 @@ import Image from "next/image";
 import { getNewsItems, getYoutubeThumbnail } from "@/lib/news";
 import type { NewsType } from "@/lib/news";
 
-const TYPE_CONFIG: Record<NewsType, { label: string; cls: string }> = {
-  youtube: { label: "YouTube", cls: "bg-rose-100 text-rose-700" },
-  "fb-group": { label: "FB 社團", cls: "bg-blue-100 text-blue-700" },
-  "fb-page": { label: "FB 粉專", cls: "bg-blue-100 text-blue-700" },
-  manufacturer: { label: "車廠", cls: "bg-stone-100 text-stone-600" },
+const TYPE_CONFIG: Record<
+  NewsType,
+  { label: string; badge: string; bg: string; logo: string }
+> = {
+  youtube: {
+    label: "YouTube",
+    badge: "bg-rose-100 text-rose-700",
+    bg: "bg-stone-800",
+    logo: "▶",
+  },
+  "fb-group": {
+    label: "FB 社團",
+    badge: "bg-blue-100 text-blue-700",
+    bg: "bg-[#1877f2]",
+    logo: "f",
+  },
+  "fb-page": {
+    label: "FB 粉專",
+    badge: "bg-blue-100 text-blue-700",
+    bg: "bg-[#1877f2]",
+    logo: "f",
+  },
+  manufacturer: {
+    label: "車廠",
+    badge: "bg-stone-100 text-stone-600",
+    bg: "bg-stone-600",
+    logo: "🚐",
+  },
 };
 
 export const metadata = {
@@ -39,6 +62,7 @@ export default function NewsPage() {
             const cfg = TYPE_CONFIG[item.type];
             const ytThumb =
               item.type === "youtube" ? getYoutubeThumbnail(item.url) : null;
+            const thumbUrl = item.thumbnail || ytThumb;
 
             return (
               <a
@@ -48,21 +72,35 @@ export default function NewsPage() {
                 rel="noopener noreferrer"
                 className="group flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white transition-shadow hover:shadow-md"
               >
-                {ytThumb && (
-                  <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
+                {/* 圖片區：有縮圖顯示縮圖，否則顯示品牌色塊 */}
+                <div className="relative aspect-video w-full overflow-hidden">
+                  {thumbUrl ? (
                     <Image
-                      src={ytThumb}
+                      src={thumbUrl}
                       alt={item.title}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       unoptimized
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div
+                      className={`flex h-full w-full items-center justify-center ${cfg.bg}`}
+                    >
+                      <span
+                        className={`select-none font-bold text-white/90 ${
+                          cfg.logo.length === 1 ? "text-5xl" : "text-4xl"
+                        }`}
+                      >
+                        {cfg.logo}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex flex-1 flex-col p-5">
                   <div className="mb-3 flex items-center gap-2">
                     <span
-                      className={`rounded px-2 py-0.5 text-xs font-medium ${cfg.cls}`}
+                      className={`rounded px-2 py-0.5 text-xs font-medium ${cfg.badge}`}
                     >
                       {cfg.label}
                     </span>
@@ -74,7 +112,9 @@ export default function NewsPage() {
                     {item.title}
                   </p>
                   {item.note && (
-                    <p className="mt-2 text-xs text-stone-400 line-clamp-1">{item.note}</p>
+                    <p className="mt-2 text-xs text-stone-400 line-clamp-1">
+                      {item.note}
+                    </p>
                   )}
                   <div className="mt-4 flex items-center justify-between">
                     <span className="text-xs text-stone-400">{item.date}</span>
