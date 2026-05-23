@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import BuildStatus from "@/components/admin/BuildStatus";
 
 const NAV = [
   { href: "/admin", label: "總覽", icon: "▤" },
@@ -50,6 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             );
           })}
         </nav>
+        <BuildStatus />
         <div className="border-t border-stone-200 p-3">
           <button
             onClick={logout}
