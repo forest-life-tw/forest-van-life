@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 type CarData = {
-  name: string; note: string; description: string; images: string[];
+  name: string; note: string; description: string; images: string[]; content: string;
 };
 
 export default function EditCarPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -12,7 +12,7 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
   const [slug, setSlug] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [car, setCar] = useState<CarData>({ name: "", note: "", description: "", images: [] });
+  const [car, setCar] = useState<CarData>({ name: "", note: "", description: "", images: [], content: "" });
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -82,7 +82,21 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
         </Field>
         <Field label="詳細介紹">
           <textarea value={car.description} onChange={(e) => set("description", e.target.value)}
-            rows={5} className="input" />
+            rows={4} className="input" />
+        </Field>
+
+        {/* 改裝內容 */}
+        <Field label="這台車能怎麼改（Markdown 格式）">
+          <p className="mb-1.5 text-xs text-stone-500">
+            支援 Markdown：## 標題、**粗體**、- 清單、--- 分隔線
+          </p>
+          <textarea
+            value={car.content}
+            onChange={(e) => set("content", e.target.value)}
+            rows={16}
+            className="input font-mono text-sm"
+            placeholder={"## 適合改裝項目\n\n- 臥鋪木作\n- 副電池系統\n\n## 合法路線\n\n貨車變更登記路線..."}
+          />
         </Field>
 
         {/* Images */}
@@ -123,7 +137,7 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
       </div>
 
       <style jsx global>{`
-        .input { width:100%; border-radius:8px; border:1px solid #e7e5e4; padding:8px 12px; font-size:14px; outline:none; }
+        .input { width:100%; border-radius:8px; border:1px solid #e7e5e4; padding:8px 12px; font-size:14px; outline:none; resize:vertical; }
         .input:focus { border-color:#059669; box-shadow:0 0 0 3px rgba(5,150,105,0.1); }
       `}</style>
     </div>

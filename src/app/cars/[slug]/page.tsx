@@ -1,29 +1,29 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import siteConfig from "../../../../content/site-config.json";
+import { getSiteConfig } from "@/lib/config";
+import { getDoc } from "@/lib/markdown";
 import CarGallery from "@/components/CarGallery";
 
-type Car = (typeof siteConfig.cars)[number];
-
-function getCar(slug: string): Car | undefined {
-  return siteConfig.cars.find((c) => c.slug === slug);
-}
-
 export async function generateStaticParams() {
-  return siteConfig.cars.map((c) => ({ slug: c.slug }));
+  const config = getSiteConfig();
+  return config.cars.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata(props: PageProps<"/cars/[slug]">) {
   const { slug } = await props.params;
-  const car = getCar(slug);
+  const config = getSiteConfig();
+  const car = config.cars.find((c) => c.slug === slug);
   if (!car) return { title: "找不到車型" };
   return { title: `${car.name} 改裝指南`, description: car.note };
 }
 
 export default async function CarPage(props: PageProps<"/cars/[slug]">) {
   const { slug } = await props.params;
-  const car = getCar(slug);
+  const config = getSiteConfig();
+  const car = config.cars.find((c) => c.slug === slug);
   if (!car) notFound();
+
+  const doc = await getDoc("cars", slug);
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
@@ -56,16 +56,16 @@ export default async function CarPage(props: PageProps<"/cars/[slug]">) {
         </section>
       )}
 
-      <section className="mb-10">
-        <h2 className="mb-4 text-xl font-semibold text-stone-900">這台車能怎麼改</h2>
-        <p className="text-stone-600">
-          [此頁將整理：適合的改裝項目、合法路線（貨車變更 vs A 類審驗）、
-          典型方案組合、實際施工照、預估工時與費用區間。]
-        </p>
-        <p className="mt-4 inline-block rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          施工內容整理中
-        </p>
-      </section>
+      {/* 改裝內容（從 content/cars/[slug].md 讀取） */}
+      {doc?.html && (
+        <section className="mb-10">
+          <h2 className="mb-6 text-xl font-semibold text-stone-900">這台車能怎麼改</h2>
+          <div
+            className="prose-article"
+            dangerouslySetInnerHTML={{ __html: doc.html }}
+          />
+        </section>
+      )}
 
       <aside className="rounded-xl border border-emerald-200 bg-emerald-50 p-6">
         <h3 className="mb-2 text-lg font-semibold text-emerald-900">想了解這台車的改裝方案？</h3>
