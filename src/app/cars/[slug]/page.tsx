@@ -14,7 +14,7 @@ export async function generateMetadata(props: PageProps<"/cars/[slug]">) {
   const config = getSiteConfig();
   const car = config.cars.find((c) => c.slug === slug);
   if (!car) return { title: "找不到車型" };
-  return { title: `${car.name} 改裝指南`, description: car.note };
+  return { title: `${car.name} 改裝指南`, description: car.description || car.note };
 }
 
 export default async function CarPage(props: PageProps<"/cars/[slug]">) {

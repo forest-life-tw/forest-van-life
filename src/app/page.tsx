@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listDocs } from "@/lib/markdown";
 import { getSiteConfig } from "@/lib/config";
+import LocalBusinessJsonLd from "@/components/LocalBusinessJsonLd";
 
 export default function Home() {
   const laws = listDocs("laws").slice(0, 3);
@@ -9,6 +10,8 @@ export default function Home() {
   const cars = config.cars;
 
   return (
+    <>
+    <LocalBusinessJsonLd />
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-800 to-stone-900 text-white">
@@ -146,6 +149,7 @@ export default function Home() {
         </div>
       </section>
     </div>
+    </>
   );
 }
 
