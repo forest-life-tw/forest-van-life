@@ -14,6 +14,8 @@ export async function PUT(req: Request) {
   const config = JSON.parse(file.content);
   if (updates.contact) config.contact = { ...config.contact, ...updates.contact };
   if (updates.homepage) config.homepage = { ...config.homepage, ...updates.homepage };
+  if (updates.about) config.about = { ...config.about, ...updates.about };
+  if (updates.logo !== undefined) config.logo = updates.logo;
   const ok = await ghWrite(
     "content/site-config.json",
     JSON.stringify(config, null, 2),

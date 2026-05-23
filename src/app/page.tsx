@@ -1,34 +1,12 @@
 import Link from "next/link";
 import { listDocs } from "@/lib/markdown";
-
-const FEATURES = [
-  {
-    title: "法規依據齊全",
-    desc: "每一項改裝對應道安規則條文與監理流程，不打模糊仗。",
-    icon: "📋",
-  },
-  {
-    title: "驗車過得了",
-    desc: "從設計階段就考慮驗車要求，不會做完才發現過不了。",
-    icon: "✅",
-  },
-  {
-    title: "保固與後續",
-    desc: "施工有保固，未來轉售、過戶都有完整紀錄可查。",
-    icon: "🔧",
-  },
-];
-
-const CARS = [
-  { slug: "staria", name: "Hyundai Staria", note: "貨車版 / Camper" },
-  { slug: "hiace", name: "Toyota Hiace", note: "經典商用底盤" },
-  { slug: "combo", name: "Opel Combo", note: "歐系小型廂車" },
-  { slug: "caddy", name: "VW Caddy", note: "德系緊湊" },
-  { slug: "j-space", name: "CMC J-Space", note: "國產輕商用" },
-];
+import { getSiteConfig } from "@/lib/config";
 
 export default function Home() {
   const laws = listDocs("laws").slice(0, 3);
+  const config = getSiteConfig();
+  const { heroTitle, heroSubtitle, features } = config.homepage;
+  const cars = config.cars;
 
   return (
     <div>
@@ -38,14 +16,11 @@ export default function Home() {
           <p className="mb-4 text-sm font-medium uppercase tracking-widest text-emerald-300">
             森活家露營車 · Forest Van Life
           </p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-tight md:text-5xl">
-            把車輛改成移動的家，<br />
-            每一道工序都查得到法規。
+          <h1 className="max-w-3xl text-4xl font-bold leading-tight md:text-5xl whitespace-pre-line">
+            {heroTitle}
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-emerald-50/90">
-            專注貨車、客貨車的合法露營改裝。從座位變更、車內木作、副電池到駐車冷氣，
-            我們把每項改裝對應的法源、變更登記流程、驗車要點全部整理清楚，
-            讓你在動工之前就知道未來能不能上路。
+            {heroSubtitle}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
@@ -67,7 +42,7 @@ export default function Home() {
       {/* Features */}
       <section className="mx-auto max-w-6xl px-6 py-20">
         <div className="grid gap-6 md:grid-cols-3">
-          {FEATURES.map((f) => (
+          {features.map((f) => (
             <div
               key={f.title}
               className="rounded-xl border border-stone-200 bg-white p-6 transition-shadow hover:shadow-md"
@@ -139,7 +114,7 @@ export default function Home() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-          {CARS.map((car) => (
+          {cars.map((car) => (
             <Link
               key={car.slug}
               href={`/cars/${car.slug}`}

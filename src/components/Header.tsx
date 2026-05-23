@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getSiteConfig } from "@/lib/config";
 
 const NAV = [
   { href: "/laws", label: "常見問題 Knowhow" },
@@ -8,11 +9,13 @@ const NAV = [
 ];
 
 export default function Header() {
+  const { logo } = getSiteConfig();
+
   return (
     <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="森活家露營車" width={276} height={202} className="h-10 w-auto" priority />
+          <Image src={logo} alt="森活家露營車" width={276} height={202} className="h-10 w-auto" priority unoptimized={logo.startsWith("http")} />
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
