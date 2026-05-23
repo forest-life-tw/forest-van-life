@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { markBuildTriggered } from "@/lib/build-signal";
 
 type CarData = {
   name: string; note: string; description: string; images: string[]; content: string;
@@ -32,7 +33,7 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
   async function deleteCar() {
     setDeleting(true);
     const res = await fetch(`/api/admin/cars/${slug}`, { method: "DELETE" });
-    if (res.ok) router.push("/admin/cars");
+    if (res.ok) { markBuildTriggered(); router.push("/admin/cars"); }
     else { alert("刪除失敗"); setDeleting(false); setConfirmDelete(false); }
   }
 
@@ -43,7 +44,7 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(car),
     });
-    if (res.ok) router.push("/admin/cars");
+    if (res.ok) { markBuildTriggered(); router.push("/admin/cars"); }
     else alert("儲存失敗");
     setSaving(false);
   }

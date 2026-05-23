@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { markBuildTriggered } from "@/lib/build-signal";
 
 export default function NewArticlePage() {
   const router = useRouter();
@@ -28,6 +29,7 @@ export default function NewArticlePage() {
       body: JSON.stringify(form),
     });
     if (res.ok) {
+      markBuildTriggered();
       router.push("/admin/articles");
     } else {
       alert("儲存失敗，請稍後再試");

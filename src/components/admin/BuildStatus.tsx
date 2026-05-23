@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { BuildStatusResponse, DeploymentStatus } from "@/app/api/admin/build-status/route";
+import { isRecentBuild } from "@/lib/build-signal";
 
 const ACTIVE_STATES: DeploymentStatus[] = ["QUEUED", "BUILDING"];
 const POLL_ACTIVE = 5_000;
@@ -33,8 +34,8 @@ export default function BuildStatus() {
 
   useEffect(() => {
     poll();
-    const isActive = ACTIVE_STATES.includes(status);
-    const id = setInterval(poll, isActive ? POLL_ACTIVE : POLL_IDLE);
+    const fast = ACTIVE_STATES.includes(status) || isRecentBuild();
+    const id = setInterval(poll, fast ? POLL_ACTIVE : POLL_IDLE);
     return () => clearInterval(id);
   }, [poll, status]);
 

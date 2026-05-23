@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArticleForm } from "../new/page";
+import { markBuildTriggered } from "@/lib/build-signal";
 
 export default function EditArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
@@ -44,7 +45,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ slug: st
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, oldCategory: searchParams.get("cat") ?? "laws" }),
     });
-    if (res.ok) router.push("/admin/articles");
+    if (res.ok) { markBuildTriggered(); router.push("/admin/articles"); }
     else alert("儲存失敗");
     setSaving(false);
   }
@@ -52,7 +53,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ slug: st
   async function handleDelete() {
     if (!confirm(`確定要刪除「${form.title}」？`)) return;
     const res = await fetch(`/api/admin/articles/${slug}?cat=${form.category}`, { method: "DELETE" });
-    if (res.ok) router.push("/admin/articles");
+    if (res.ok) { markBuildTriggered(); router.push("/admin/articles"); }
     else alert("刪除失敗");
   }
 

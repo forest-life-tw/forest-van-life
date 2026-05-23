@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { markBuildTriggered } from "@/lib/build-signal";
 
 type Feature = { icon: string; title: string; desc: string };
 type Config = {
@@ -79,6 +80,7 @@ export default function SettingsPage() {
       }),
     });
     if (res.ok) {
+      markBuildTriggered();
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } else {
