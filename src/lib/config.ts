@@ -4,6 +4,7 @@ import path from "node:path";
 const CONFIG_PATH = path.join(process.cwd(), "content/site-config.json");
 
 export type Feature = { icon: string; title: string; desc: string };
+export type CarImageGroup = { name: string; images: string[] };
 
 export type SiteConfig = {
   logo: string;
@@ -30,6 +31,7 @@ export type SiteConfig = {
     note: string;
     description: string;
     images: string[];
+    imageGroups: CarImageGroup[];
   }[];
 };
 

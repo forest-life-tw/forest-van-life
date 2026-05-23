@@ -49,10 +49,10 @@ export default async function CarPage(props: PageProps<"/cars/[slug]">) {
       </header>
 
       {/* Image Gallery */}
-      {car.images.length > 0 && (
+      {(car.imageGroups?.length > 0 || car.images.length > 0) && (
         <section className="mb-12">
           <h2 className="mb-4 text-xl font-semibold text-stone-900">改裝實績</h2>
-          <CarGallery images={car.images} carName={car.name} />
+          <CarGallery imageGroups={car.imageGroups} images={car.images} carName={car.name} />
         </section>
       )}
 

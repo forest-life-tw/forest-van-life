@@ -2,20 +2,59 @@
 import Image from "next/image";
 import { useState } from "react";
 
-export default function CarGallery({ images, carName }: { images: string[]; carName: string }) {
+type ImageGroup = { name: string; images: string[] };
+
+type Props = {
+  imageGroups?: ImageGroup[];
+  images?: string[];
+  carName: string;
+};
+
+export default function CarGallery({ imageGroups, images = [], carName }: Props) {
+  const groups: ImageGroup[] =
+    imageGroups && imageGroups.length > 0
+      ? imageGroups
+      : images.length > 0
+      ? [{ name: "改裝實績", images }]
+      : [];
+
+  const [activeIdx, setActiveIdx] = useState(0);
   const [lightbox, setLightbox] = useState<number | null>(null);
 
+  if (groups.length === 0) return null;
+
+  const current = groups[activeIdx] ?? groups[0];
+
   function prev() {
-    setLightbox((i) => (i === null ? null : (i - 1 + images.length) % images.length));
+    setLightbox((i) => (i === null ? null : (i - 1 + current.images.length) % current.images.length));
   }
   function next() {
-    setLightbox((i) => (i === null ? null : (i + 1) % images.length));
+    setLightbox((i) => (i === null ? null : (i + 1) % current.images.length));
   }
 
   return (
     <>
+      {groups.length > 1 && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          {groups.map((g, i) => (
+            <button
+              key={i}
+              onClick={() => { setActiveIdx(i); setLightbox(null); }}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                i === activeIdx
+                  ? "bg-emerald-700 text-white"
+                  : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+              }`}
+            >
+              {g.name}
+              <span className="ml-1.5 text-xs opacity-70">({g.images.length})</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {images.map((url, i) => (
+        {current.images.map((url, i) => (
           <button
             key={url}
             onClick={() => setLightbox(i)}
@@ -23,7 +62,7 @@ export default function CarGallery({ images, carName }: { images: string[]; carN
           >
             <Image
               src={url}
-              alt={`${carName} 改裝實績 ${i + 1}`}
+              alt={`${carName} ${current.name} ${i + 1}`}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 640px) 50vw, 33vw"
@@ -37,7 +76,6 @@ export default function CarGallery({ images, carName }: { images: string[]; carN
         ))}
       </div>
 
-      {/* Lightbox */}
       {lightbox !== null && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
@@ -51,18 +89,19 @@ export default function CarGallery({ images, carName }: { images: string[]; carN
           </button>
 
           <div
-            className="relative max-h-[90vh] max-w-5xl w-full mx-16"
+            className="relative mx-16 w-full max-w-5xl"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={images[lightbox]}
+              src={current.images[lightbox]}
               alt={`${carName} ${lightbox + 1}`}
               width={1200}
               height={800}
-              className="rounded-xl object-contain max-h-[85vh] w-full"
+              className="max-h-[85vh] w-full rounded-xl object-contain"
             />
             <p className="mt-2 text-center text-sm text-white/60">
-              {lightbox + 1} / {images.length}
+              {groups.length > 1 && <span className="mr-2">{current.name} ·</span>}
+              {lightbox + 1} / {current.images.length}
             </p>
           </div>
 
@@ -75,7 +114,7 @@ export default function CarGallery({ images, carName }: { images: string[]; carN
 
           <button
             onClick={() => setLightbox(null)}
-            className="absolute top-4 right-4 rounded-full bg-white/20 p-2 text-white hover:bg-white/30"
+            className="absolute right-4 top-4 rounded-full bg-white/20 p-2 text-white hover:bg-white/30"
           >
             ✕
           </button>
