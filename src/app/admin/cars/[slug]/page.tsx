@@ -12,6 +12,8 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
   const [slug, setSlug] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [car, setCar] = useState<CarData>({ name: "", note: "", description: "", images: [], content: "" });
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -25,6 +27,13 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
 
   function set(key: keyof CarData, val: string) {
     setCar((c) => ({ ...c, [key]: val }));
+  }
+
+  async function deleteCar() {
+    setDeleting(true);
+    const res = await fetch(`/api/admin/cars/${slug}`, { method: "DELETE" });
+    if (res.ok) router.push("/admin/cars");
+    else { alert("刪除失敗"); setDeleting(false); setConfirmDelete(false); }
   }
 
   async function save() {
@@ -64,14 +73,53 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
     <div className="mx-auto max-w-3xl">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-stone-900">編輯車型：{car.name}</h1>
-        <button
-          onClick={save}
-          disabled={saving}
-          className="rounded-lg bg-emerald-700 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
-        >
-          {saving ? "儲存中..." : "儲存"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="rounded-lg border border-rose-200 px-4 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50"
+          >
+            刪除車型
+          </button>
+          <button
+            onClick={save}
+            disabled={saving}
+            className="rounded-lg bg-emerald-700 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
+          >
+            {saving ? "儲存中..." : "儲存"}
+          </button>
+        </div>
       </div>
+
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <h2 className="mb-2 text-lg font-bold text-stone-900">確認刪除車型</h2>
+            <p className="mb-1 text-sm text-stone-600">
+              即將刪除「{car.name}」，這個操作無法復原：
+            </p>
+            <ul className="mb-5 mt-2 space-y-1 text-sm text-stone-500">
+              <li>• 從車型列表移除</li>
+              <li>• 刪除改裝說明內容（如有）</li>
+              <li>• 已上傳的圖片連結仍會保留在 Blob</li>
+            </ul>
+            <div className="flex gap-3">
+              <button
+                onClick={deleteCar}
+                disabled={deleting}
+                className="flex-1 rounded-lg bg-rose-600 py-2 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50"
+              >
+                {deleting ? "刪除中..." : "確認刪除"}
+              </button>
+              <button
+                onClick={() => setConfirmDelete(false)}
+                className="rounded-lg border border-stone-200 px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-50"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-5 rounded-xl border border-stone-200 bg-white p-6">
         <Field label="車型名稱">

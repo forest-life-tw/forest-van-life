@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ghRead, ghWrite } from "@/lib/github";
+import { ghRead, ghWrite, ghDelete } from "@/lib/github";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -44,6 +44,33 @@ export async function PUT(req: Request, { params }: Params) {
       `更新車型內容：${slug}`,
       existingContent?.sha
     );
+  }
+
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(_req: Request, { params }: Params) {
+  const { slug } = await params;
+
+  const file = await ghRead("content/site-config.json");
+  if (!file) return NextResponse.json({ error: "config not found" }, { status: 500 });
+  const config = JSON.parse(file.content);
+  const exists = config.cars.some((c: { slug: string }) => c.slug === slug);
+  if (!exists) return NextResponse.json({ error: "not found" }, { status: 404 });
+
+  config.cars = config.cars.filter((c: { slug: string }) => c.slug !== slug);
+  const ok = await ghWrite(
+    "content/site-config.json",
+    JSON.stringify(config, null, 2),
+    `刪除車型：${slug}`,
+    file.sha
+  );
+  if (!ok) return NextResponse.json({ error: "failed" }, { status: 500 });
+
+  // 若有車型 markdown，一併刪除
+  const mdFile = await ghRead(`content/cars/${slug}.md`);
+  if (mdFile) {
+    await ghDelete(`content/cars/${slug}.md`, mdFile.sha, `刪除車型內容：${slug}`);
   }
 
   return NextResponse.json({ ok: true });
