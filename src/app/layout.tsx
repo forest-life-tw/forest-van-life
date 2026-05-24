@@ -15,33 +15,33 @@ const BASE_URL = "https://forest-van-life.vercel.app";
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "森活家露營車 | 合法廂車改裝專家",
+    default: "森活家露營車｜台灣合法廂車改裝廠，Hiace、Staria、Caddy 驗車保過",
     template: "%s | 森活家露營車",
   },
   description:
-    "森活家露營車，專注貨車、客貨車的合法露營改裝。座位變更、車頂置物架、副電池、駐車冷氣，每一項對應法規依據，過得了驗車。",
+    "專注貨車、客貨車合法露營改裝。Hiace、Staria、Caddy、Combo、J-Space 皆有完整改裝案例。座位數變更、副電池系統、駐車冷氣、車頂置物架，每一項改裝對應法規依據，協助監理站變更登記，驗車過得了。",
   openGraph: {
     type: "website",
     locale: "zh_TW",
     siteName: "森活家露營車",
-    title: "森活家露營車 | 合法廂車改裝專家",
+    title: "森活家露營車｜台灣合法廂車改裝廠，Hiace、Staria、Caddy 驗車保過",
     description:
-      "台灣合法廂車改裝廠，所有施作對應法規依據、協助監理站變更登記，驗車保過。",
+      "專注貨車、客貨車合法露營改裝。Hiace、Staria、Caddy、Combo、J-Space 皆有完整改裝案例。座位數變更、副電池系統、駐車冷氣、車頂置物架，每一項改裝對應法規依據，協助監理站變更登記，驗車過得了。",
     images: [
       {
-        url: "/logo.png",
-        width: 276,
-        height: 202,
-        alt: "森活家露營車",
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "森活家露營車｜台灣合法廂車改裝廠",
       },
     ],
   },
   twitter: {
-    card: "summary",
-    title: "森活家露營車 | 合法廂車改裝專家",
+    card: "summary_large_image",
+    title: "森活家露營車｜台灣合法廂車改裝廠，Hiace、Staria、Caddy 驗車保過",
     description:
-      "台灣合法廂車改裝廠，所有施作對應法規依據、協助監理站變更登記，驗車保過。",
-    images: ["/logo.png"],
+      "專注貨車、客貨車合法露營改裝。Hiace、Staria、Caddy、Combo、J-Space 皆有完整改裝案例。座位數變更、副電池系統、駐車冷氣、車頂置物架，每一項改裝對應法規依據，協助監理站變更登記，驗車過得了。",
+    images: ["/og-image.png"],
   },
 };
 
