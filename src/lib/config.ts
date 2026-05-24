@@ -5,6 +5,7 @@ const CONFIG_PATH = path.join(process.cwd(), "content/site-config.json");
 
 export type Feature = { icon: string; title: string; desc: string };
 export type CarImageGroup = { name: string; images: string[] };
+export type Model3dItem = { label: string; url: string };
 
 export type SiteConfig = {
   logo: string;
@@ -33,6 +34,7 @@ export type SiteConfig = {
     images: string[];
     imageGroups: CarImageGroup[];
     model3d?: string;
+    model3dItems?: Model3dItem[];
   }[];
 };
 

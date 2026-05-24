@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/config";
 import { getDoc } from "@/lib/markdown";
 import CarGallery from "@/components/CarGallery";
-import CarModelViewer from "@/components/CarModelViewer";
+import CarModelSelector from "@/components/CarModelSelector";
 
 export async function generateStaticParams() {
   const config = getSiteConfig();
@@ -58,12 +58,20 @@ export default async function CarPage(props: PageProps<"/cars/[slug]">) {
       )}
 
       {/* 3D 模型 */}
-      {car.model3d && (
-        <section className="mb-12">
-          <h2 className="mb-4 text-xl font-semibold text-stone-900">3D 模型預覽</h2>
-          <CarModelViewer src={car.model3d} alt={`${car.name} 3D 模型 - 森活家露營車改裝`} />
-        </section>
-      )}
+      {(() => {
+        const items =
+          Array.isArray(car.model3dItems) && car.model3dItems.length > 0
+            ? car.model3dItems
+            : car.model3d
+            ? [{ label: "3D 模型", url: car.model3d }]
+            : [];
+        return items.length > 0 ? (
+          <section className="mb-12">
+            <h2 className="mb-4 text-xl font-semibold text-stone-900">3D 模型預覽</h2>
+            <CarModelSelector items={items} carName={car.name} />
+          </section>
+        ) : null;
+      })()}
 
       {/* 改裝內容（從 content/cars/[slug].md 讀取） */}
       {doc?.html && (

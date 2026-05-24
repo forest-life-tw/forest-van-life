@@ -6,6 +6,8 @@ import { markBuildTriggered } from "@/lib/build-signal";
 
 type ImageGroup = { name: string; images: string[] };
 
+type Model3dItem = { label: string; url: string };
+
 type CarData = {
   name: string;
   note: string;
@@ -14,6 +16,7 @@ type CarData = {
   images: string[];
   content: string;
   model3d: string;
+  model3dItems: Model3dItem[];
 };
 
 export default function EditCarPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -25,7 +28,7 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [car, setCar] = useState<CarData>({
-    name: "", note: "", description: "", imageGroups: [], images: [], content: "", model3d: "",
+    name: "", note: "", description: "", imageGroups: [], images: [], content: "", model3d: "", model3dItems: [],
   });
   const fileRef = useRef<HTMLInputElement>(null);
   const modelFileRef = useRef<HTMLInputElement>(null);
@@ -44,7 +47,14 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
           : Array.isArray(data.images) && data.images.length > 0
           ? [{ name: "改裝實績", images: data.images }]
           : [];
-      setCar({ ...data, imageGroups: groups, content: data.content ?? "", model3d: data.model3d ?? "" });
+      // 遷移舊 model3d → model3dItems
+      const model3dItems: Model3dItem[] =
+        Array.isArray(data.model3dItems) && data.model3dItems.length > 0
+          ? data.model3dItems
+          : data.model3d
+          ? [{ label: "預設模型", url: data.model3d }]
+          : [];
+      setCar({ ...data, imageGroups: groups, content: data.content ?? "", model3d: "", model3dItems });
     });
   }, [params]);
 
@@ -53,19 +63,26 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
   }
 
   async function handleModelUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
     setUploadingModel(true);
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("carSlug", slug);
-    fd.append("type", "model3d");
-    const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-    if (res.ok) {
-      const { url } = await res.json();
-      setCar((c) => ({ ...c, model3d: url }));
+    const newItems: { label: string; url: string }[] = [];
+    for (const file of files) {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("carSlug", slug);
+      fd.append("type", "model3d");
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      if (res.ok) {
+        const { url } = await res.json();
+        newItems.push({ label: file.name.replace(/\.[^.]+$/, ""), url });
+      }
+    }
+    if (newItems.length > 0) {
+      setCar((c) => ({ ...c, model3dItems: [...c.model3dItems, ...newItems] }));
     }
     setUploadingModel(false);
+    if (modelFileRef.current) modelFileRef.current.value = "";
   }
 
   function addGroup() {
@@ -139,7 +156,7 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
     const res = await fetch(`/api/admin/cars/${slug}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...rest, images: [], content }),
+      body: JSON.stringify({ ...rest, images: [], model3d: "", content }),
     });
     if (res.ok) { markBuildTriggered(); router.push("/admin/cars"); }
     else alert("儲存失敗");
@@ -296,35 +313,61 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
           />
         </div>
 
-        {/* 3D 模型 */}
+        {/* 3D 模型（多筆） */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-stone-700">3D 模型（.glb）</label>
-          {car.model3d ? (
-            <div className="flex items-center gap-3 rounded-lg border border-stone-200 bg-stone-50 p-3">
-              <span className="text-lg">📦</span>
-              <span className="flex-1 truncate text-sm text-stone-700">{car.model3d.split("/").pop()}</span>
-              <button
-                type="button"
-                onClick={() => setCar((c) => ({ ...c, model3d: "" }))}
-                className="shrink-0 rounded-lg border border-rose-200 px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50"
-              >
-                移除
-              </button>
-            </div>
-          ) : (
+          <div className="mb-3 flex items-center justify-between">
+            <label className="text-sm font-medium text-stone-700">3D 模型（.glb）</label>
             <button
               type="button"
               onClick={() => { if (modelFileRef.current) { modelFileRef.current.value = ""; modelFileRef.current.click(); } }}
               disabled={uploadingModel}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stone-300 py-6 text-sm text-stone-400 hover:border-emerald-400 hover:text-emerald-600 disabled:opacity-50"
+              className="rounded-lg bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100 disabled:opacity-50"
             >
-              {uploadingModel ? "上傳中..." : "+ 上傳 .glb 檔案"}
+              {uploadingModel ? "上傳中..." : "+ 上傳模型"}
             </button>
+          </div>
+
+          {car.model3dItems.length === 0 ? (
+            <div className="rounded-lg border-2 border-dashed border-stone-200 py-8 text-center text-sm text-stone-400">
+              尚未上傳 3D 模型，點擊「+ 上傳模型」新增 .glb 檔案
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {car.model3dItems.map((item, idx) => (
+                <div key={idx} className="flex items-center gap-3 rounded-lg border border-stone-200 bg-stone-50 p-3">
+                  <span className="text-lg">📦</span>
+                  <input
+                    value={item.label}
+                    onChange={(e) => {
+                      const label = e.target.value;
+                      setCar((c) => ({
+                        ...c,
+                        model3dItems: c.model3dItems.map((m, i) => i === idx ? { ...m, label } : m),
+                      }));
+                    }}
+                    className="input flex-1 min-w-0"
+                    placeholder="模型名稱（例：全床模式、行李模式）"
+                  />
+                  <span className="hidden shrink-0 max-w-[160px] truncate text-xs text-stone-400 sm:block">
+                    {item.url.split("/").pop()}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setCar((c) => ({ ...c, model3dItems: c.model3dItems.filter((_, i) => i !== idx) }))}
+                    className="shrink-0 rounded-lg border border-rose-200 px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50"
+                  >
+                    移除
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
+
           <input
             ref={modelFileRef}
             type="file"
             accept=".glb"
+            multiple
             className="hidden"
             onChange={handleModelUpload}
           />
