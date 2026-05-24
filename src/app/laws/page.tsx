@@ -26,9 +26,17 @@ export default async function KnowhowPage({
 }) {
   const { tab } = await searchParams;
   const config = getSiteConfig();
-  const tabs = config.articleCategories ?? DEFAULT_TABS;
-  const activeTab = tabs.find((t) => t.id === tab)?.id ?? tabs[0]?.id ?? "laws";
-  const docs = listDocs(activeTab);
+  const cats = config.articleCategories ?? DEFAULT_TABS;
+  const catLabel = Object.fromEntries(cats.map((c) => [c.id, c.label]));
+
+  const isAll = !tab || tab === "all";
+  const activeTab = isAll ? "all" : (cats.find((t) => t.id === tab)?.id ?? "all");
+
+  const docs = isAll
+    ? cats.flatMap((c) => listDocs(c.id).map((d) => ({ ...d, categoryId: c.id, categoryLabel: c.label })))
+    : listDocs(activeTab).map((d) => ({ ...d, categoryId: activeTab, categoryLabel: catLabel[activeTab] ?? "" }));
+
+  const allTabs = [{ id: "all", label: "全部" }, ...cats];
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
@@ -42,10 +50,10 @@ export default async function KnowhowPage({
 
       {/* Tab bar */}
       <div className="mb-0 flex gap-1 border-b border-stone-200">
-        {tabs.map((t) => (
+        {allTabs.map((t) => (
           <Link
             key={t.id}
-            href={`?tab=${t.id}`}
+            href={t.id === "all" ? "?" : `?tab=${t.id}`}
             className={`relative -mb-px rounded-t-lg border px-6 py-3 text-sm font-medium transition-colors ${
               activeTab === t.id
                 ? "border-stone-200 border-b-white bg-white text-emerald-700"
@@ -68,15 +76,13 @@ export default async function KnowhowPage({
             {docs.map((doc, i) => {
               const light = doc.light ? LIGHT_MAP[doc.light] : null;
               return (
-                <li key={doc.slug} className={i > 0 ? "border-t border-stone-100" : ""}>
+                <li key={`${doc.categoryId}-${doc.slug}`} className={i > 0 ? "border-t border-stone-100" : ""}>
                   <Link
                     href={`/laws/${doc.slug}`}
                     className="group flex items-center gap-4 px-6 py-5 transition-colors hover:bg-stone-50"
                   >
                     {light ? (
-                      <span
-                        className={`shrink-0 rounded px-2 py-0.5 text-xs font-medium ${light.cls}`}
-                      >
+                      <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-medium ${light.cls}`}>
                         {light.label}
                       </span>
                     ) : (
@@ -87,16 +93,9 @@ export default async function KnowhowPage({
                       {doc.title}
                     </span>
 
-                    {doc.tags && doc.tags.length > 0 && (
-                      <span className="hidden sm:flex shrink-0 gap-1">
-                        {doc.tags.slice(0, 2).map((t) => (
-                          <span
-                            key={t}
-                            className="rounded bg-stone-100 px-2 py-0.5 text-xs text-stone-500"
-                          >
-                            {t}
-                          </span>
-                        ))}
+                    {isAll && (
+                      <span className="hidden sm:block shrink-0 rounded bg-stone-100 px-2 py-0.5 text-xs text-stone-500">
+                        {doc.categoryLabel}
                       </span>
                     )}
 
