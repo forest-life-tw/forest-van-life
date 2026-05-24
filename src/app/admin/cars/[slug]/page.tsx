@@ -13,6 +13,7 @@ type CarData = {
   imageGroups: ImageGroup[];
   images: string[];
   content: string;
+  model3d: string;
 };
 
 export default function EditCarPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -20,12 +21,14 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
   const [slug, setSlug] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploadingGroup, setUploadingGroup] = useState<number | null>(null);
+  const [uploadingModel, setUploadingModel] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [car, setCar] = useState<CarData>({
-    name: "", note: "", description: "", imageGroups: [], images: [], content: "",
+    name: "", note: "", description: "", imageGroups: [], images: [], content: "", model3d: "",
   });
   const fileRef = useRef<HTMLInputElement>(null);
+  const modelFileRef = useRef<HTMLInputElement>(null);
   const targetGroupRef = useRef<number>(0);
 
   useEffect(() => {
@@ -41,12 +44,28 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
           : Array.isArray(data.images) && data.images.length > 0
           ? [{ name: "改裝實績", images: data.images }]
           : [];
-      setCar({ ...data, imageGroups: groups, content: data.content ?? "" });
+      setCar({ ...data, imageGroups: groups, content: data.content ?? "", model3d: data.model3d ?? "" });
     });
   }, [params]);
 
   function set(key: keyof Pick<CarData, "name" | "note" | "description" | "content">, val: string) {
     setCar((c) => ({ ...c, [key]: val }));
+  }
+
+  async function handleModelUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingModel(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("carSlug", slug);
+    fd.append("type", "model3d");
+    const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+    if (res.ok) {
+      const { url } = await res.json();
+      setCar((c) => ({ ...c, model3d: url }));
+    }
+    setUploadingModel(false);
   }
 
   function addGroup() {
@@ -274,6 +293,40 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
             multiple
             className="hidden"
             onChange={handleFileChange}
+          />
+        </div>
+
+        {/* 3D 模型 */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-stone-700">3D 模型（.glb）</label>
+          {car.model3d ? (
+            <div className="flex items-center gap-3 rounded-lg border border-stone-200 bg-stone-50 p-3">
+              <span className="text-lg">📦</span>
+              <span className="flex-1 truncate text-sm text-stone-700">{car.model3d.split("/").pop()}</span>
+              <button
+                type="button"
+                onClick={() => setCar((c) => ({ ...c, model3d: "" }))}
+                className="shrink-0 rounded-lg border border-rose-200 px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50"
+              >
+                移除
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => { if (modelFileRef.current) { modelFileRef.current.value = ""; modelFileRef.current.click(); } }}
+              disabled={uploadingModel}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stone-300 py-6 text-sm text-stone-400 hover:border-emerald-400 hover:text-emerald-600 disabled:opacity-50"
+            >
+              {uploadingModel ? "上傳中..." : "+ 上傳 .glb 檔案"}
+            </button>
+          )}
+          <input
+            ref={modelFileRef}
+            type="file"
+            accept=".glb"
+            className="hidden"
+            onChange={handleModelUpload}
           />
         </div>
       </div>

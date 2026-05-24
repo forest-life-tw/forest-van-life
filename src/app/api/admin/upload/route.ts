@@ -9,11 +9,13 @@ export async function POST(req: Request) {
 
   if (!file) return NextResponse.json({ error: "no file" }, { status: 400 });
 
-  const ext = file.name.split(".").pop() ?? "jpg";
+  const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
   let filename: string;
 
   if (type === "logo") {
     filename = `logo/logo.${ext}`;
+  } else if (type === "model3d" && carSlug) {
+    filename = `cars/${carSlug}/model3d-${Date.now()}.glb`;
   } else if (carSlug) {
     const groupName = form.get("groupName") as string | null;
     const safeGroup = groupName ? groupName.replace(/[/\\?%*:|"<>]/g, "").trim() : "";

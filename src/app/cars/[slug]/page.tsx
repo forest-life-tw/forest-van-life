@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/config";
 import { getDoc } from "@/lib/markdown";
 import CarGallery from "@/components/CarGallery";
+import CarModelViewer from "@/components/CarModelViewer";
 
 export async function generateStaticParams() {
   const config = getSiteConfig();
@@ -53,6 +54,14 @@ export default async function CarPage(props: PageProps<"/cars/[slug]">) {
         <section className="mb-12">
           <h2 className="mb-4 text-xl font-semibold text-stone-900">改裝實績</h2>
           <CarGallery imageGroups={car.imageGroups} images={car.images} carName={car.name} />
+        </section>
+      )}
+
+      {/* 3D 模型 */}
+      {car.model3d && (
+        <section className="mb-12">
+          <h2 className="mb-4 text-xl font-semibold text-stone-900">3D 模型預覽</h2>
+          <CarModelViewer src={car.model3d} alt={`${car.name} 3D 模型 - 森活家露營車改裝`} />
         </section>
       )}
 

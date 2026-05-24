@@ -32,6 +32,7 @@ export type SiteConfig = {
     description: string;
     images: string[];
     imageGroups: CarImageGroup[];
+    model3d?: string;
   }[];
 };
 

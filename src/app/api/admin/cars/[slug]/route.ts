@@ -14,7 +14,7 @@ export async function GET(_req: Request, { params }: Params) {
   if (!car) return NextResponse.json({ error: "not found" }, { status: 404 });
 
   const contentFile = await ghRead(`content/cars/${slug}.md`);
-  return NextResponse.json({ ...car, content: contentFile?.content ?? "" });
+  return NextResponse.json({ ...car, model3d: car.model3d ?? "", content: contentFile?.content ?? "" });
 }
 
 export async function PUT(req: Request, { params }: Params) {
