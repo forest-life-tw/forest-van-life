@@ -132,7 +132,9 @@
       "name": "001",
       "note": "",
       "description": "",
-      "images": []
+      "images": [],
+      "model3d": "",
+      "imageGroups": []
     }
   ]
 }
