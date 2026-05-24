@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { markBuildTriggered } from "@/lib/build-signal";
 
@@ -50,6 +50,25 @@ export function ArticleForm({
   isNew?: boolean;
   onDelete?: () => void;
 }) {
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d.articleTags)) setAvailableTags(d.articleTags); });
+  }, []);
+
+  const selectedTags = form.tags
+    ? form.tags.split(",").map((t) => t.trim()).filter(Boolean)
+    : [];
+
+  function toggleTag(tag: string) {
+    const next = selectedTags.includes(tag)
+      ? selectedTags.filter((t) => t !== tag)
+      : [...selectedTags, tag];
+    set("tags", next.join(", "));
+  }
+
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-6 flex items-center justify-between">
@@ -102,9 +121,31 @@ export function ArticleForm({
           </Field>
         </div>
 
-        <Field label="標籤（逗號分隔）">
-          <input value={form.tags} onChange={(e) => set("tags", e.target.value)}
-            className="input" placeholder="例：駐車冷氣, 法規" />
+        <Field label="標籤">
+          {availableTags.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-1.5">
+              {availableTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => toggleTag(tag)}
+                  className={`rounded px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                    selectedTags.includes(tag)
+                      ? "bg-emerald-700 text-white"
+                      : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          )}
+          <input
+            value={form.tags}
+            onChange={(e) => set("tags", e.target.value)}
+            className="input"
+            placeholder="或手動輸入，逗號分隔"
+          />
         </Field>
 
         <Field label="內文（Markdown 格式）">

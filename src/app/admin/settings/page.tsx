@@ -14,6 +14,7 @@ type Config = {
     consultationDesc: string;
     consultationSteps: string[];
   };
+  articleTags: string[];
 };
 
 const DEFAULT: Config = {
@@ -35,6 +36,7 @@ const DEFAULT: Config = {
     consultationDesc: "",
     consultationSteps: [],
   },
+  articleTags: [],
 };
 
 export default function SettingsPage() {
@@ -42,6 +44,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
+  const [newTag, setNewTag] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -77,6 +80,7 @@ export default function SettingsPage() {
         contact: cfg.contact,
         homepage: cfg.homepage,
         about: cfg.about,
+        articleTags: cfg.articleTags,
       }),
     });
     if (res.ok) {
@@ -304,6 +308,56 @@ export default function SettingsPage() {
             placeholder="例：週一至週六 09:00–18:00"
           />
         </Field>
+      </Card>
+
+      {/* 文章標籤管理 */}
+      <Card title="文章標籤管理">
+        <p className="text-xs text-stone-500">新增或刪除可在文章編輯頁快速套用的標籤。</p>
+        <div className="flex flex-wrap gap-2">
+          {cfg.articleTags.map((tag) => (
+            <span key={tag} className="flex items-center gap-1 rounded-full bg-stone-100 pl-3 pr-1 py-1 text-xs text-stone-700">
+              {tag}
+              <button
+                type="button"
+                onClick={() => setCfg((c) => ({ ...c, articleTags: c.articleTags.filter((t) => t !== tag) }))}
+                className="flex h-4 w-4 items-center justify-center rounded-full text-stone-400 hover:bg-stone-300 hover:text-stone-700"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input
+            value={newTag}
+            onChange={(e) => setNewTag(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const t = newTag.trim();
+                if (t && !cfg.articleTags.includes(t)) {
+                  setCfg((c) => ({ ...c, articleTags: [...c.articleTags, t] }));
+                }
+                setNewTag("");
+              }
+            }}
+            className="input flex-1"
+            placeholder="輸入新標籤，按 Enter 新增"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const t = newTag.trim();
+              if (t && !cfg.articleTags.includes(t)) {
+                setCfg((c) => ({ ...c, articleTags: [...c.articleTags, t] }));
+              }
+              setNewTag("");
+            }}
+            className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
+          >
+            新增
+          </button>
+        </div>
       </Card>
 
       <div className="pb-8 flex justify-end">
