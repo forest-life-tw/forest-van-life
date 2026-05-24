@@ -51,6 +51,8 @@ export default function SettingsPage() {
   const [logoUploading, setLogoUploading] = useState(false);
   const [newCatId, setNewCatId] = useState("");
   const [newCatLabel, setNewCatLabel] = useState("");
+  const [dragOver, setDragOver] = useState<number | null>(null);
+  const dragIdx = useRef<number | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -322,8 +324,31 @@ export default function SettingsPage() {
           分類對應文章的存放資料夾（ID 建立後不可更改）。刪除分類不會刪除文章，但文章將不再顯示於列表。
         </p>
         <div className="space-y-2">
-          {cfg.articleCategories.map((cat) => (
-            <div key={cat.id} className="flex items-center gap-3 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2">
+          {cfg.articleCategories.map((cat, i) => (
+            <div
+              key={cat.id}
+              draggable
+              onDragStart={() => { dragIdx.current = i; }}
+              onDragOver={(e) => { e.preventDefault(); setDragOver(i); }}
+              onDragLeave={() => setDragOver(null)}
+              onDrop={() => {
+                if (dragIdx.current !== null && dragIdx.current !== i) {
+                  setCfg((c) => {
+                    const cats = [...c.articleCategories];
+                    const [moved] = cats.splice(dragIdx.current!, 1);
+                    cats.splice(i, 0, moved);
+                    return { ...c, articleCategories: cats };
+                  });
+                }
+                setDragOver(null);
+                dragIdx.current = null;
+              }}
+              onDragEnd={() => { setDragOver(null); dragIdx.current = null; }}
+              className={`flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors ${
+                dragOver === i ? "border-emerald-400 bg-emerald-50" : "border-stone-200 bg-stone-50"
+              }`}
+            >
+              <span className="shrink-0 cursor-grab select-none text-stone-300 text-lg leading-none">⠿</span>
               <span className="w-24 shrink-0 text-xs text-stone-400 font-mono">{cat.id}</span>
               <input
                 value={cat.label}
