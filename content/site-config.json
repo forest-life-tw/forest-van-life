@@ -48,9 +48,22 @@
     ]
   },
   "articleCategories": [
-    { "id": "laws", "label": "法規制度" },
-    { "id": "design", "label": "構思設計" },
-    { "id": "others", "label": "其他" }
+    {
+      "id": "laws",
+      "label": "法規制度"
+    },
+    {
+      "id": "design",
+      "label": "構思設計"
+    },
+    {
+      "id": "others",
+      "label": "其他"
+    },
+    {
+      "id": "difference",
+      "label": "差異大比較"
+    }
   ],
   "cars": [
     {
