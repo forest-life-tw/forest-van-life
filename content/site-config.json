@@ -83,7 +83,8 @@
             "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/hiace/%E6%96%B0%E5%88%86%E9%A1%9E-1779544120548.JPG"
           ]
         }
-      ]
+      ],
+      "model3d": "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/hiace/model3d-1779604139543.glb"
     },
     {
       "slug": "combo",
