@@ -1,16 +1,15 @@
 import Link from "next/link";
 import { listDocs } from "@/lib/markdown";
+import { getSiteConfig } from "@/lib/config";
 
 export const metadata = {
   title: "常見問題 Knowhow",
   description: "改裝前你需要知道的事：設計構思、法規制度、各種常見問題解答。",
 };
 
-type Tab = "design" | "laws" | "others";
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: "design", label: "該怎麼構思設計" },
+const DEFAULT_TABS = [
   { id: "laws", label: "法規制度" },
+  { id: "design", label: "構思設計" },
   { id: "others", label: "其他" },
 ];
 
@@ -26,7 +25,9 @@ export default async function KnowhowPage({
   searchParams: Promise<{ tab?: string }>;
 }) {
   const { tab } = await searchParams;
-  const activeTab: Tab = tab === "design" || tab === "others" ? tab : "laws";
+  const config = getSiteConfig();
+  const tabs = config.articleCategories ?? DEFAULT_TABS;
+  const activeTab = tabs.find((t) => t.id === tab)?.id ?? tabs[0]?.id ?? "laws";
   const docs = listDocs(activeTab);
 
   return (
@@ -41,7 +42,7 @@ export default async function KnowhowPage({
 
       {/* Tab bar */}
       <div className="mb-0 flex gap-1 border-b border-stone-200">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <Link
             key={t.id}
             href={`?tab=${t.id}`}

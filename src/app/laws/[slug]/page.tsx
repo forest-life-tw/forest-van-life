@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getKnowhowDoc, listDocs } from "@/lib/markdown";
+import { getSiteConfig } from "@/lib/config";
 
 export async function generateStaticParams() {
-  return [
-    ...listDocs("laws").map((d) => ({ slug: d.slug })),
-    ...listDocs("design").map((d) => ({ slug: d.slug })),
-    ...listDocs("others").map((d) => ({ slug: d.slug })),
-  ];
+  const config = getSiteConfig();
+  const cats = config.articleCategories?.map((c) => c.id) ?? ["laws", "design", "others"];
+  return cats.flatMap((cat) => listDocs(cat).map((d) => ({ slug: d.slug })));
 }
 
 export async function generateMetadata(props: PageProps<"/laws/[slug]">) {

@@ -4,10 +4,11 @@ import matter from "gray-matter";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
+import { getSiteConfig } from "./config";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
 
-export type DocCategory = "laws" | "cars" | "design" | "others";
+export type DocCategory = string;
 
 export type DocMeta = {
   slug: string;
@@ -64,8 +65,10 @@ export function listDocs(category: DocCategory): DocMeta[] {
 
 export async function getKnowhowDoc(
   slug: string,
-): Promise<{ doc: Doc; category: DocCategory } | null> {
-  for (const cat of ["laws", "design", "others"] as const) {
+): Promise<{ doc: Doc; category: string } | null> {
+  const config = getSiteConfig();
+  const cats = config.articleCategories?.map((c) => c.id) ?? ["laws", "design", "others"];
+  for (const cat of cats) {
     const doc = await getDoc(cat, slug);
     if (doc) return { doc, category: cat };
   }

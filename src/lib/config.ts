@@ -9,7 +9,7 @@ export type Model3dItem = { label: string; url: string };
 
 export type SiteConfig = {
   logo: string;
-  articleTags?: string[];
+  articleCategories?: { id: string; label: string }[];
   homepage: {
     heroTitle: string;
     heroSubtitle: string;

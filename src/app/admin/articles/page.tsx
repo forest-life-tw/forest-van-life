@@ -1,20 +1,6 @@
 import Link from "next/link";
 import { listDocs } from "@/lib/markdown";
-
-const CATS = [
-  { id: "all", label: "全部" },
-  { id: "design", label: "構思設計" },
-  { id: "laws", label: "法規制度" },
-  { id: "others", label: "其他" },
-] as const;
-
-type CatId = (typeof CATS)[number]["id"];
-
-const CAT_LABEL: Record<string, string> = {
-  design: "構思設計",
-  laws: "法規制度",
-  others: "其他",
-};
+import { getSiteConfig } from "@/lib/config";
 
 export default async function ArticlesAdminPage({
   searchParams,
@@ -22,25 +8,23 @@ export default async function ArticlesAdminPage({
   searchParams: Promise<{ cat?: string }>;
 }) {
   const { cat } = await searchParams;
-  const activeCat: CatId = (["design", "laws", "others"] as string[]).includes(
-    cat ?? "",
-  )
-    ? (cat as CatId)
-    : "all";
-
-  const byCategory = {
-    design: listDocs("design"),
-    laws: listDocs("laws"),
-    others: listDocs("others"),
-  };
-
-  const all = [
-    ...byCategory.design.map((d) => ({ ...d, category: "design" as const })),
-    ...byCategory.laws.map((d) => ({ ...d, category: "laws" as const })),
-    ...byCategory.others.map((d) => ({ ...d, category: "others" as const })),
+  const config = getSiteConfig();
+  const cats = config.articleCategories ?? [
+    { id: "laws", label: "法規制度" },
+    { id: "design", label: "構思設計" },
+    { id: "others", label: "其他" },
   ];
 
+  const byCategory: Record<string, ReturnType<typeof listDocs>> = {};
+  for (const c of cats) byCategory[c.id] = listDocs(c.id);
+
+  const all = cats.flatMap((c) =>
+    (byCategory[c.id] ?? []).map((d) => ({ ...d, category: c.id }))
+  );
+
+  const activeCat = cats.find((c) => c.id === cat)?.id ?? "all";
   const filtered = activeCat === "all" ? all : all.filter((d) => d.category === activeCat);
+  const catLabel = Object.fromEntries(cats.map((c) => [c.id, c.label]));
 
   return (
     <div>
@@ -56,11 +40,9 @@ export default async function ArticlesAdminPage({
 
       {/* Category tabs */}
       <div className="flex gap-1 border-b border-stone-200">
-        {CATS.map((c) => {
-          const count =
-            c.id === "all"
-              ? all.length
-              : byCategory[c.id as keyof typeof byCategory].length;
+        {/* 全部 tab */}
+        {[{ id: "all", label: "全部" }, ...cats].map((c) => {
+          const count = c.id === "all" ? all.length : (byCategory[c.id]?.length ?? 0);
           const isActive = activeCat === c.id;
           return (
             <Link
@@ -75,9 +57,7 @@ export default async function ArticlesAdminPage({
               {c.label}
               <span
                 className={`ml-1.5 rounded-full px-1.5 py-0.5 text-xs ${
-                  isActive
-                    ? "bg-emerald-100 text-emerald-600"
-                    : "bg-stone-100 text-stone-500"
+                  isActive ? "bg-emerald-100 text-emerald-600" : "bg-stone-100 text-stone-500"
                 }`}
               >
                 {count}
@@ -104,7 +84,7 @@ export default async function ArticlesAdminPage({
               {filtered.map((doc, i) => (
                 <tr key={doc.slug} className={i > 0 ? "border-t border-stone-100" : ""}>
                   <td className="px-4 py-3 font-medium text-stone-900">{doc.title}</td>
-                  <td className="px-4 py-3 text-stone-500">{CAT_LABEL[doc.category]}</td>
+                  <td className="px-4 py-3 text-stone-500">{catLabel[doc.category] ?? doc.category}</td>
                   <td className="px-4 py-3 text-stone-400">{doc.updated ?? "—"}</td>
                   <td className="px-4 py-3">
                     <Link

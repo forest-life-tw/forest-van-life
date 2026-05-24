@@ -50,24 +50,17 @@ export function ArticleForm({
   isNew?: boolean;
   onDelete?: () => void;
 }) {
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [categories, setCategories] = useState<{ id: string; label: string }[]>([
+    { id: "laws", label: "法規制度" },
+    { id: "design", label: "構思設計" },
+    { id: "others", label: "其他" },
+  ]);
 
   useEffect(() => {
     fetch("/api/admin/settings")
       .then((r) => r.json())
-      .then((d) => { if (Array.isArray(d.articleTags)) setAvailableTags(d.articleTags); });
+      .then((d) => { if (Array.isArray(d.articleCategories)) setCategories(d.articleCategories); });
   }, []);
-
-  const selectedTags = form.tags
-    ? form.tags.split(",").map((t) => t.trim()).filter(Boolean)
-    : [];
-
-  function toggleTag(tag: string) {
-    const next = selectedTags.includes(tag)
-      ? selectedTags.filter((t) => t !== tag)
-      : [...selectedTags, tag];
-    set("tags", next.join(", "));
-  }
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -103,9 +96,9 @@ export function ArticleForm({
         <div className="grid grid-cols-3 gap-4">
           <Field label="分類">
             <select value={form.category} onChange={(e) => set("category", e.target.value)} className="input">
-              <option value="design">構思設計</option>
-              <option value="laws">法規制度</option>
-              <option value="others">其他</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.label}</option>
+              ))}
             </select>
           </Field>
           <Field label="合法燈號">
@@ -121,31 +114,9 @@ export function ArticleForm({
           </Field>
         </div>
 
-        <Field label="標籤">
-          {availableTags.length > 0 && (
-            <div className="mb-2 flex flex-wrap gap-1.5">
-              {availableTags.map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => toggleTag(tag)}
-                  className={`rounded px-2.5 py-0.5 text-xs font-medium transition-colors ${
-                    selectedTags.includes(tag)
-                      ? "bg-emerald-700 text-white"
-                      : "bg-stone-100 text-stone-600 hover:bg-stone-200"
-                  }`}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-          )}
-          <input
-            value={form.tags}
-            onChange={(e) => set("tags", e.target.value)}
-            className="input"
-            placeholder="或手動輸入，逗號分隔"
-          />
+        <Field label="標籤（逗號分隔）">
+          <input value={form.tags} onChange={(e) => set("tags", e.target.value)}
+            className="input" placeholder="例：駐車冷氣, 法規" />
         </Field>
 
         <Field label="內文（Markdown 格式）">

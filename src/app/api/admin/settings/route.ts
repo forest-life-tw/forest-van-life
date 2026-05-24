@@ -16,7 +16,7 @@ export async function PUT(req: Request) {
   if (updates.homepage) config.homepage = { ...config.homepage, ...updates.homepage };
   if (updates.about) config.about = { ...config.about, ...updates.about };
   if (updates.logo !== undefined) config.logo = updates.logo;
-  if (updates.articleTags !== undefined) config.articleTags = updates.articleTags;
+  if (updates.articleCategories !== undefined) config.articleCategories = updates.articleCategories;
   const ok = await ghWrite(
     "content/site-config.json",
     JSON.stringify(config, null, 2),

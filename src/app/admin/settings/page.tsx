@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { markBuildTriggered } from "@/lib/build-signal";
 
 type Feature = { icon: string; title: string; desc: string };
+type Category = { id: string; label: string };
 type Config = {
   logo: string;
   homepage: { heroTitle: string; heroSubtitle: string; features: Feature[] };
@@ -14,7 +15,7 @@ type Config = {
     consultationDesc: string;
     consultationSteps: string[];
   };
-  articleTags: string[];
+  articleCategories: Category[];
 };
 
 const DEFAULT: Config = {
@@ -36,7 +37,11 @@ const DEFAULT: Config = {
     consultationDesc: "",
     consultationSteps: [],
   },
-  articleTags: [],
+  articleCategories: [
+    { id: "laws", label: "法規制度" },
+    { id: "design", label: "構思設計" },
+    { id: "others", label: "其他" },
+  ],
 };
 
 export default function SettingsPage() {
@@ -44,7 +49,8 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
-  const [newTag, setNewTag] = useState("");
+  const [newCatId, setNewCatId] = useState("");
+  const [newCatLabel, setNewCatLabel] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -80,7 +86,7 @@ export default function SettingsPage() {
         contact: cfg.contact,
         homepage: cfg.homepage,
         about: cfg.about,
-        articleTags: cfg.articleTags,
+        articleCategories: cfg.articleCategories,
       }),
     });
     if (res.ok) {
@@ -310,48 +316,66 @@ export default function SettingsPage() {
         </Field>
       </Card>
 
-      {/* 文章標籤管理 */}
-      <Card title="文章標籤管理">
-        <p className="text-xs text-stone-500">新增或刪除可在文章編輯頁快速套用的標籤。</p>
-        <div className="flex flex-wrap gap-2">
-          {cfg.articleTags.map((tag) => (
-            <span key={tag} className="flex items-center gap-1 rounded-full bg-stone-100 pl-3 pr-1 py-1 text-xs text-stone-700">
-              {tag}
+      {/* 文章分類管理 */}
+      <Card title="文章分類管理">
+        <p className="text-xs text-stone-500">
+          分類對應文章的存放資料夾（ID 建立後不可更改）。刪除分類不會刪除文章，但文章將不再顯示於列表。
+        </p>
+        <div className="space-y-2">
+          {cfg.articleCategories.map((cat) => (
+            <div key={cat.id} className="flex items-center gap-3 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2">
+              <span className="w-24 shrink-0 text-xs text-stone-400 font-mono">{cat.id}</span>
+              <input
+                value={cat.label}
+                onChange={(e) =>
+                  setCfg((c) => ({
+                    ...c,
+                    articleCategories: c.articleCategories.map((x) =>
+                      x.id === cat.id ? { ...x, label: e.target.value } : x
+                    ),
+                  }))
+                }
+                className="input flex-1"
+                placeholder="分類名稱"
+              />
               <button
                 type="button"
-                onClick={() => setCfg((c) => ({ ...c, articleTags: c.articleTags.filter((t) => t !== tag) }))}
-                className="flex h-4 w-4 items-center justify-center rounded-full text-stone-400 hover:bg-stone-300 hover:text-stone-700"
+                onClick={() =>
+                  setCfg((c) => ({
+                    ...c,
+                    articleCategories: c.articleCategories.filter((x) => x.id !== cat.id),
+                  }))
+                }
+                className="shrink-0 rounded px-2 py-1 text-xs text-rose-500 hover:bg-rose-50"
               >
-                ×
+                刪除
               </button>
-            </span>
+            </div>
           ))}
         </div>
         <div className="flex gap-2">
           <input
-            value={newTag}
-            onChange={(e) => setNewTag(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                const t = newTag.trim();
-                if (t && !cfg.articleTags.includes(t)) {
-                  setCfg((c) => ({ ...c, articleTags: [...c.articleTags, t] }));
-                }
-                setNewTag("");
-              }
-            }}
+            value={newCatId}
+            onChange={(e) => setNewCatId(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+            className="input w-32 font-mono"
+            placeholder="ID（英文）"
+          />
+          <input
+            value={newCatLabel}
+            onChange={(e) => setNewCatLabel(e.target.value)}
             className="input flex-1"
-            placeholder="輸入新標籤，按 Enter 新增"
+            placeholder="顯示名稱"
           />
           <button
             type="button"
             onClick={() => {
-              const t = newTag.trim();
-              if (t && !cfg.articleTags.includes(t)) {
-                setCfg((c) => ({ ...c, articleTags: [...c.articleTags, t] }));
-              }
-              setNewTag("");
+              const id = newCatId.trim();
+              const label = newCatLabel.trim();
+              if (!id || !label) return;
+              if (cfg.articleCategories.some((c) => c.id === id)) return;
+              setCfg((c) => ({ ...c, articleCategories: [...c.articleCategories, { id, label }] }));
+              setNewCatId("");
+              setNewCatLabel("");
             }}
             className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
           >
