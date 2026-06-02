@@ -1,0 +1,72 @@
+<svg viewBox="0 0 640 290" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }</style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="640" height="290" fill="#f9fafb" rx="10"/>
+
+  <!-- Date caption -->
+  <text x="340" y="22" text-anchor="middle" font-size="12" fill="#6b7280">2025年10月20日・未使用任何取暖設備</text>
+
+  <!-- Grid lines: T=10→y=222, T=15→y=172, T=20→y=122, T=25→y=72 -->
+  <line x1="60" y1="222" x2="620" y2="222" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="60" y1="172" x2="620" y2="172" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="60" y1="122" x2="620" y2="122" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="60" y1="72"  x2="620" y2="72"  stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Y-axis labels -->
+  <text x="52" y="226" text-anchor="end" font-size="11" fill="#9ca3af">10°C</text>
+  <text x="52" y="176" text-anchor="end" font-size="11" fill="#9ca3af">15°C</text>
+  <text x="52" y="126" text-anchor="end" font-size="11" fill="#9ca3af">20°C</text>
+  <text x="52" y="76"  text-anchor="end" font-size="11" fill="#9ca3af">25°C</text>
+
+  <!-- Axes -->
+  <line x1="60" y1="42"  x2="60"  y2="242" stroke="#d1d5db" stroke-width="1.5"/>
+  <line x1="60" y1="242" x2="620" y2="242" stroke="#d1d5db" stroke-width="1.5"/>
+
+  <!-- X-axis labels (H=0,6,12,18,24 → x=60,200,340,480,620) -->
+  <text x="60"  y="258" text-anchor="middle" font-size="11" fill="#9ca3af">00:00</text>
+  <text x="200" y="258" text-anchor="middle" font-size="11" fill="#9ca3af">06:00</text>
+  <text x="340" y="258" text-anchor="middle" font-size="11" fill="#9ca3af">12:00</text>
+  <text x="480" y="258" text-anchor="middle" font-size="11" fill="#9ca3af">18:00</text>
+  <text x="620" y="258" text-anchor="middle" font-size="11" fill="#9ca3af">24:00</text>
+
+  <!--
+    Coordinate formulas:
+      x = 60 + H * 23.33   (chart width 560px / 24h)
+      y = 42 + (28 - T) * 10  (chart height 200px / 20°C range 8–28)
+
+    Outdoor data (T): 0h=14, 2h=13, 4h=12, 6h=13, 8h=16, 10h=20,
+                      12h=23, 14h=25, 16h=24, 18h=21, 20h=18, 22h=15, 24h=13
+    Indoor  data (T): 0h=21, 2h=21, 4h=20, 6h=20,  8h=21, 10h=22,
+                      12h=23, 14h=24, 16h=24, 18h=23, 20h=22, 22h=22, 24h=21
+  -->
+
+  <!-- Outdoor temperature line (orange) -->
+  <polyline
+    points="60,182 106.7,192 153.3,202 200,192 246.7,162 293.3,122 340,92 386.7,72 433.3,82 480,112 526.7,142 573.3,172 620,192"
+    fill="none" stroke="#f97316" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Outdoor min / max markers -->
+  <circle cx="153.3" cy="202" r="4" fill="#f97316"/>
+  <text x="153.3" y="219" text-anchor="middle" font-size="10" fill="#c2410c" font-weight="600">最低 12°C</text>
+
+  <circle cx="386.7" cy="72" r="4" fill="#f97316"/>
+  <text x="386.7" y="63" text-anchor="middle" font-size="10" fill="#c2410c" font-weight="600">最高 25°C</text>
+
+  <!-- Indoor temperature line (emerald) -->
+  <polyline
+    points="60,112 106.7,112 153.3,122 200,122 246.7,112 293.3,102 340,92 386.7,82 433.3,82 480,92 526.7,102 573.3,102 620,112"
+    fill="none" stroke="#059669" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Indoor range label (right-end annotation) -->
+  <text x="624" y="108" font-size="10" fill="#059669" font-weight="600">21°C</text>
+
+  <!-- Legend -->
+  <line x1="65"  y1="276" x2="88"  y2="276" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="93"  y="280" font-size="12" fill="#374151">車外溫度（12–25°C，日夜起伏 13°C）</text>
+
+  <line x1="350" y1="276" x2="373" y2="276" stroke="#059669" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="378" y="280" font-size="12" fill="#374151">車內溫度（20–25°C，全日穩定）</text>
+</svg>
