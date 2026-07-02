@@ -65,6 +65,14 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
   async function handleModelUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
+    const MAX_MB = 4;
+    const oversized = files.filter((f) => f.size > MAX_MB * 1024 * 1024);
+    if (oversized.length > 0) {
+      const names = oversized.map((f) => `${f.name}（${(f.size / 1024 / 1024).toFixed(1)} MB）`).join("\n");
+      alert(`以下檔案超過 ${MAX_MB} MB 上限，無法上傳：\n${names}\n\n請壓縮模型後再試。`);
+      if (modelFileRef.current) modelFileRef.current.value = "";
+      return;
+    }
     setUploadingModel(true);
     const newItems: { label: string; url: string }[] = [];
     for (const file of files) {
@@ -72,10 +80,17 @@ export default function EditCarPage({ params }: { params: Promise<{ slug: string
       fd.append("file", file);
       fd.append("carSlug", slug);
       fd.append("type", "model3d");
-      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-      if (res.ok) {
-        const { url } = await res.json();
-        newItems.push({ label: file.name.replace(/\.[^.]+$/, ""), url });
+      try {
+        const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+        if (res.ok) {
+          const { url } = await res.json();
+          newItems.push({ label: file.name.replace(/\.[^.]+$/, ""), url });
+        } else {
+          const body = await res.json().catch(() => ({}));
+          alert(`上傳失敗（${res.status}）：${body.error ?? "未知錯誤"}`);
+        }
+      } catch (err) {
+        alert(`上傳錯誤：${String(err)}`);
       }
     }
     if (newItems.length > 0) {

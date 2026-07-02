@@ -26,6 +26,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "missing type or carSlug" }, { status: 400 });
   }
 
-  const blob = await put(filename, file, { access: "public" });
-  return NextResponse.json({ url: blob.url });
+  try {
+    const blob = await put(filename, file, { access: "public" });
+    return NextResponse.json({ url: blob.url });
+  } catch (err) {
+    console.error("Blob upload error:", err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }
+
+export const maxDuration = 60;
