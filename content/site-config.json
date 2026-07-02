@@ -159,11 +159,7 @@
       "model3d": "",
       "model3dItems": [
         {
-          "label": "2026_7_2_1_compressed",
-          "url": "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/j-space/model3d-1782990044352.glb"
-        },
-        {
-          "label": "2026_7_2_compressed",
+          "label": "Jspace客製模組",
           "url": "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/j-space/model3d-1782990050851.glb"
         }
       ]
