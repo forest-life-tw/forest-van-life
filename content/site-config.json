@@ -170,5 +170,13 @@
     }
   ],
   "productCategories": [],
-  "products": []
+  "products": [
+    {
+      "slug": "bottomframe",
+      "name": "海力士底框",
+      "category": "",
+      "note": "",
+      "images": []
+    }
+  ]
 }
