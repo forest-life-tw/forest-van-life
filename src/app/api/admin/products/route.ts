@@ -31,3 +31,22 @@ export async function POST(req: Request) {
   if (!ok) return NextResponse.json({ error: "failed" }, { status: 500 });
   return NextResponse.json({ slug });
 }
+
+export async function PUT(req: Request) {
+  const products = await req.json();
+
+  const file = await ghRead("content/site-config.json");
+  if (!file) return NextResponse.json({ error: "config not found" }, { status: 500 });
+  const config = JSON.parse(file.content);
+
+  config.products = products;
+
+  const ok = await ghWrite(
+    "content/site-config.json",
+    JSON.stringify(config, null, 2),
+    "調整配件排序",
+    file.sha
+  );
+  if (!ok) return NextResponse.json({ error: "failed" }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}

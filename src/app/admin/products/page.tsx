@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { markBuildTriggered } from "@/lib/build-signal";
 
-type Category = { id: string; label: string };
+type Category = { id: string; label: string; icon?: string };
 type Product = { slug: string; name: string; category: string; note: string; images: string[] };
+
+const ICONS = ["🧰", "🛏️", "🪵", "❄️", "🔋", "🔌", "🪟", "🚰", "💡", "🧯", "🌞", "🧺", "🚪", "🔧"];
 
 export default function ProductsAdminPage() {
   const router = useRouter();
@@ -23,6 +25,7 @@ export default function ProductsAdminPage() {
   const [catsSaved, setCatsSaved] = useState(false);
   const [newCatId, setNewCatId] = useState("");
   const [newCatLabel, setNewCatLabel] = useState("");
+  const [newCatIcon, setNewCatIcon] = useState(ICONS[0]);
   const [dragOver, setDragOver] = useState<number | null>(null);
   const dragIdx = useRef<number | null>(null);
 
@@ -33,6 +36,10 @@ export default function ProductsAdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ slug: "", name: "", category: "", note: "" });
   const [error, setError] = useState("");
+  const [orderSaving, setOrderSaving] = useState(false);
+  const [orderSaved, setOrderSaved] = useState(false);
+  const [productDragOver, setProductDragOver] = useState<number | null>(null);
+  const productDragIdx = useRef<number | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/products/intro")
@@ -110,7 +117,25 @@ export default function ProductsAdminPage() {
     }
   }
 
+  async function saveOrder() {
+    setOrderSaving(true);
+    const res = await fetch("/api/admin/products", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(products),
+    });
+    if (res.ok) {
+      markBuildTriggered();
+      setOrderSaved(true);
+      setTimeout(() => setOrderSaved(false), 3000);
+    } else {
+      alert("儲存排序失敗");
+    }
+    setOrderSaving(false);
+  }
+
   const catLabel = Object.fromEntries(cats.map((c) => [c.id, c.label]));
+  const catIcon = Object.fromEntries(cats.map((c) => [c.id, c.icon ?? "🧰"]));
 
   return (
     <div>
@@ -208,6 +233,17 @@ export default function ProductsAdminPage() {
                 }`}
               >
                 <span className="shrink-0 cursor-grab select-none text-lg leading-none text-stone-300">⠿</span>
+                <select
+                  value={cat.icon ?? ICONS[0]}
+                  onChange={(e) =>
+                    setCats((c) => c.map((x) => (x.id === cat.id ? { ...x, icon: e.target.value } : x)))
+                  }
+                  className="input w-16 shrink-0 text-center"
+                >
+                  {ICONS.map((icon) => (
+                    <option key={icon} value={icon}>{icon}</option>
+                  ))}
+                </select>
                 <span className="w-24 shrink-0 font-mono text-xs text-stone-400">{cat.id}</span>
                 <input
                   value={cat.label}
@@ -230,6 +266,15 @@ export default function ProductsAdminPage() {
         )}
 
         <div className="flex gap-2">
+          <select
+            value={newCatIcon}
+            onChange={(e) => setNewCatIcon(e.target.value)}
+            className="input w-16 shrink-0 text-center"
+          >
+            {ICONS.map((icon) => (
+              <option key={icon} value={icon}>{icon}</option>
+            ))}
+          </select>
           <input
             value={newCatId}
             onChange={(e) => setNewCatId(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
@@ -249,9 +294,10 @@ export default function ProductsAdminPage() {
               const label = newCatLabel.trim();
               if (!id || !label) return;
               if (cats.some((c) => c.id === id)) return;
-              setCats((c) => [...c, { id, label }]);
+              setCats((c) => [...c, { id, label, icon: newCatIcon }]);
               setNewCatId("");
               setNewCatLabel("");
+              setNewCatIcon(ICONS[0]);
             }}
             className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
           >
@@ -263,35 +309,70 @@ export default function ProductsAdminPage() {
       {/* 配件列表 */}
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-stone-900">配件列表</h2>
-        <button
-          onClick={() => { setShowForm(true); setError(""); setForm({ slug: "", name: "", category: cats[0]?.id ?? "", note: "" }); }}
-          className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800"
-        >
-          + 新增配件
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={saveOrder}
+            disabled={orderSaving}
+            className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+          >
+            {orderSaving ? "儲存中..." : orderSaved ? "✓ 已儲存" : "儲存排序"}
+          </button>
+          <button
+            onClick={() => { setShowForm(true); setError(""); setForm({ slug: "", name: "", category: cats[0]?.id ?? "", note: "" }); }}
+            className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800"
+          >
+            + 新增配件
+          </button>
+        </div>
       </div>
 
       {loading ? (
         <p className="text-stone-400">載入中…</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((p) => (
-            <Link
-              key={p.slug}
-              href={`/admin/products/${p.slug}`}
-              className="flex items-center gap-4 rounded-xl border border-stone-200 bg-white p-5 transition-shadow hover:shadow-md"
-            >
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-stone-100 text-2xl">
-                🧰
+        <>
+          <p className="mb-3 text-xs text-stone-500">拖曳卡片可調整順序，前台 /products 也會依此順序顯示，記得按「儲存排序」。</p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((p, i) => (
+              <div
+                key={p.slug}
+                draggable
+                onDragStart={() => { productDragIdx.current = i; }}
+                onDragOver={(e) => { e.preventDefault(); setProductDragOver(i); }}
+                onDragLeave={() => setProductDragOver(null)}
+                onDrop={() => {
+                  if (productDragIdx.current !== null && productDragIdx.current !== i) {
+                    setProducts((list) => {
+                      const next = [...list];
+                      const [moved] = next.splice(productDragIdx.current!, 1);
+                      next.splice(i, 0, moved);
+                      return next;
+                    });
+                  }
+                  setProductDragOver(null);
+                  productDragIdx.current = null;
+                }}
+                onDragEnd={() => { setProductDragOver(null); productDragIdx.current = null; }}
+                className={`rounded-xl border transition-colors ${
+                  productDragOver === i ? "border-emerald-400 bg-emerald-50" : "border-stone-200 bg-white"
+                }`}
+              >
+                <Link
+                  href={`/admin/products/${p.slug}`}
+                  className="flex cursor-grab items-center gap-4 p-5 transition-shadow hover:shadow-md"
+                >
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-stone-100 text-2xl">
+                    {catIcon[p.category] ?? "🧰"}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-stone-900">{p.name}</p>
+                    <p className="text-sm text-stone-500">{catLabel[p.category] ?? p.note}</p>
+                    <p className="mt-1 text-xs text-stone-400">{p.images.length} 張圖片</p>
+                  </div>
+                </Link>
               </div>
-              <div className="min-w-0">
-                <p className="truncate font-medium text-stone-900">{p.name}</p>
-                <p className="text-sm text-stone-500">{catLabel[p.category] ?? p.note}</p>
-                <p className="mt-1 text-xs text-stone-400">{p.images.length} 張圖片</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* 新增配件 Modal */}

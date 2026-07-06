@@ -11,7 +11,7 @@ export type Product = { slug: string; name: string; category: string; note: stri
 export type SiteConfig = {
   logo: string;
   articleCategories?: { id: string; label: string }[];
-  productCategories?: { id: string; label: string }[];
+  productCategories?: { id: string; label: string; icon?: string }[];
   productsPage?: { eyebrow: string; title: string; subtitle: string };
   homepage: {
     heroTitle: string;

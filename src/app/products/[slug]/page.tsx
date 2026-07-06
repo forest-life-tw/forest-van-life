@@ -23,7 +23,7 @@ export default async function ProductPage(props: PageProps<"/products/[slug]">) 
   const product = config.products.find((p) => p.slug === slug);
   if (!product) notFound();
 
-  const catLabel = config.productCategories?.find((c) => c.id === product.category)?.label;
+  const cat = config.productCategories?.find((c) => c.id === product.category);
   const doc = await getDoc("products", slug);
 
   return (
@@ -38,9 +38,9 @@ export default async function ProductPage(props: PageProps<"/products/[slug]">) 
 
       <header className="mb-8 border-b border-stone-200 pb-6">
         <div className="mb-2 flex items-center gap-3">
-          <span className="text-4xl">🧰</span>
+          <span className="text-4xl">{cat?.icon ?? "🧰"}</span>
           <div>
-            {catLabel && <p className="text-xs uppercase tracking-wider text-stone-500">{catLabel}</p>}
+            {cat?.label && <p className="text-xs uppercase tracking-wider text-stone-500">{cat.label}</p>}
             <h1 className="text-3xl font-bold text-stone-900 md:text-4xl">{product.name}</h1>
           </div>
         </div>

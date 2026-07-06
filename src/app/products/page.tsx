@@ -16,6 +16,7 @@ export default async function ProductsPage({
   const config = getSiteConfig();
   const cats = config.productCategories ?? [];
   const catLabel = Object.fromEntries(cats.map((c) => [c.id, c.label]));
+  const catIcon = Object.fromEntries(cats.map((c) => [c.id, c.icon ?? "🧰"]));
 
   const isAll = !category || category === "all";
   const activeCategory = isAll ? "all" : (cats.find((c) => c.id === category)?.id ?? "all");
@@ -83,7 +84,9 @@ export default async function ProductsPage({
                     sizes="(max-width: 768px) 50vw, 33vw"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-3xl">🧰</div>
+                  <div className="flex h-full items-center justify-center text-3xl">
+                    {catIcon[p.category] ?? "🧰"}
+                  </div>
                 )}
               </div>
               <div className="p-5">
