@@ -12,6 +12,7 @@ export type SiteConfig = {
   logo: string;
   articleCategories?: { id: string; label: string }[];
   productCategories?: { id: string; label: string }[];
+  productsPage?: { eyebrow: string; title: string; subtitle: string };
   homepage: {
     heroTitle: string;
     heroSubtitle: string;

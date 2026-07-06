@@ -25,16 +25,21 @@ export default async function ProductsPage({
     : config.products.filter((p) => p.category === activeCategory);
 
   const allTabs = [{ id: "all", label: "全部" }, ...cats];
+  const pageCopy = config.productsPage ?? {
+    eyebrow: "改裝配件",
+    title: "床墊、木作、電力系統",
+    subtitle: "我們常用的改裝配件與工法，點進去看實際照片與詳細介紹。",
+  };
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
       <header className="mb-10 border-b border-stone-200 pb-8">
         <p className="mb-2 text-sm font-medium uppercase tracking-wider text-emerald-700">
-          改裝配件
+          {pageCopy.eyebrow}
         </p>
-        <h1 className="text-4xl font-bold text-stone-900">床墊、木作、電力系統</h1>
+        <h1 className="text-4xl font-bold text-stone-900">{pageCopy.title}</h1>
         <p className="mt-3 max-w-2xl text-stone-600">
-          我們常用的改裝配件與工法，點進去看實際照片與詳細介紹。
+          {pageCopy.subtitle}
         </p>
       </header>
 

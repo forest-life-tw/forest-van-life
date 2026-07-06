@@ -10,6 +10,12 @@ type Product = { slug: string; name: string; category: string; note: string; ima
 export default function ProductsAdminPage() {
   const router = useRouter();
 
+  // 列表頁文字
+  const [intro, setIntro] = useState({ eyebrow: "", title: "", subtitle: "" });
+  const [introLoading, setIntroLoading] = useState(true);
+  const [introSaving, setIntroSaving] = useState(false);
+  const [introSaved, setIntroSaved] = useState(false);
+
   // 分類管理
   const [cats, setCats] = useState<Category[]>([]);
   const [catsLoading, setCatsLoading] = useState(true);
@@ -29,6 +35,9 @@ export default function ProductsAdminPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    fetch("/api/admin/products/intro")
+      .then((r) => r.json())
+      .then((data) => { setIntro(data); setIntroLoading(false); });
     fetch("/api/admin/products/categories")
       .then((r) => r.json())
       .then((data) => { setCats(data); setCatsLoading(false); });
@@ -36,6 +45,23 @@ export default function ProductsAdminPage() {
       .then((r) => r.json())
       .then((data) => { setProducts(data); setLoading(false); });
   }, []);
+
+  async function saveIntro() {
+    setIntroSaving(true);
+    const res = await fetch("/api/admin/products/intro", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(intro),
+    });
+    if (res.ok) {
+      markBuildTriggered();
+      setIntroSaved(true);
+      setTimeout(() => setIntroSaved(false), 3000);
+    } else {
+      alert("儲存文字失敗");
+    }
+    setIntroSaving(false);
+  }
 
   async function saveCats() {
     setCatsSaving(true);
@@ -89,6 +115,53 @@ export default function ProductsAdminPage() {
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold text-stone-900">配件管理</h1>
+
+      {/* 列表頁文字 */}
+      <div className="mb-8 space-y-4 rounded-xl border border-stone-200 bg-white p-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-stone-900">列表頁文字</h2>
+          <button
+            onClick={saveIntro}
+            disabled={introSaving}
+            className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
+          >
+            {introSaving ? "儲存中..." : introSaved ? "✓ 已儲存" : "儲存文字"}
+          </button>
+        </div>
+        <p className="text-xs text-stone-500">
+          這段文字顯示在前台 /products 頁面最上方（標籤、標題、說明文字）。
+        </p>
+        {introLoading ? (
+          <p className="text-stone-400">載入中…</p>
+        ) : (
+          <div className="space-y-3">
+            <Field label="標籤（小字）">
+              <input
+                value={intro.eyebrow}
+                onChange={(e) => setIntro((i) => ({ ...i, eyebrow: e.target.value }))}
+                className="input"
+                placeholder="例：改裝配件"
+              />
+            </Field>
+            <Field label="標題">
+              <input
+                value={intro.title}
+                onChange={(e) => setIntro((i) => ({ ...i, title: e.target.value }))}
+                className="input"
+                placeholder="例：床墊、木作、電力系統"
+              />
+            </Field>
+            <Field label="說明文字">
+              <textarea
+                value={intro.subtitle}
+                onChange={(e) => setIntro((i) => ({ ...i, subtitle: e.target.value }))}
+                rows={2}
+                className="input"
+              />
+            </Field>
+          </div>
+        )}
+      </div>
 
       {/* 配件分類管理 */}
       <div className="mb-8 space-y-4 rounded-xl border border-stone-200 bg-white p-6">
