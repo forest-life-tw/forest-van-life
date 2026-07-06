@@ -173,6 +173,10 @@
     {
       "id": "bottomframe",
       "label": "底框"
+    },
+    {
+      "id": "curtain",
+      "label": "窗簾"
     }
   ],
   "products": [
