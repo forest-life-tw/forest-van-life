@@ -160,7 +160,7 @@ export default function ProductsAdminPage() {
           <input
             value={newCatId}
             onChange={(e) => setNewCatId(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-            className="input w-32 font-mono"
+            className="input flex-1 font-mono"
             placeholder="ID（英文）"
           />
           <input
