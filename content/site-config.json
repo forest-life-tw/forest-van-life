@@ -172,15 +172,18 @@
   "productCategories": [
     {
       "id": "bottomframe",
-      "label": "底框"
+      "label": "底框",
+      "icon": "🛏️"
     },
     {
       "id": "curtain",
-      "label": "窗簾"
+      "label": "窗簾",
+      "icon": "🪟"
     },
     {
       "id": "accessories",
-      "label": "小配件"
+      "label": "小配件",
+      "icon": "🧺"
     }
   ],
   "products": [
