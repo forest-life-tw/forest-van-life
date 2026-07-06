@@ -9,6 +9,7 @@ const NAV = [
   { href: "/admin/articles", label: "文章管理", icon: "✎" },
   { href: "/admin/news", label: "露營大小事", icon: "📰" },
   { href: "/admin/cars", label: "車型管理", icon: "🚐" },
+  { href: "/admin/products", label: "配件管理", icon: "🧰" },
   { href: "/admin/settings", label: "網站設定", icon: "⚙" },
 ];
 

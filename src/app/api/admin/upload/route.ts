@@ -6,6 +6,7 @@ export async function POST(req: Request) {
   const file = form.get("file") as File;
   const type = form.get("type") as string | null;
   const carSlug = form.get("carSlug") as string | null;
+  const productSlug = form.get("productSlug") as string | null;
 
   if (!file) return NextResponse.json({ error: "no file" }, { status: 400 });
 
@@ -22,6 +23,8 @@ export async function POST(req: Request) {
     filename = safeGroup
       ? `cars/${carSlug}/${safeGroup}-${Date.now()}.${ext}`
       : `cars/${carSlug}/${Date.now()}.${ext}`;
+  } else if (productSlug) {
+    filename = `products/${productSlug}/${Date.now()}.${ext}`;
   } else {
     return NextResponse.json({ error: "missing type or carSlug" }, { status: 400 });
   }

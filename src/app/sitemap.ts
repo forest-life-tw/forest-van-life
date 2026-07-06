@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: BASE_URL, priority: 1.0, changeFrequency: "weekly" },
     { url: `${BASE_URL}/laws`, priority: 0.9, changeFrequency: "weekly" },
     { url: `${BASE_URL}/cars`, priority: 0.8, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/products`, priority: 0.8, changeFrequency: "monthly" },
     { url: `${BASE_URL}/news`, priority: 0.8, changeFrequency: "weekly" },
     { url: `${BASE_URL}/about`, priority: 0.6, changeFrequency: "monthly" },
   ];
@@ -32,5 +33,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
   }));
 
-  return [...staticPages, ...lawDocs, ...carPages];
+  const productPages = config.products.map((product) => ({
+    url: `${BASE_URL}/products/${product.slug}`,
+    priority: 0.75,
+    changeFrequency: "monthly" as const,
+  }));
+
+  return [...staticPages, ...lawDocs, ...carPages, ...productPages];
 }
