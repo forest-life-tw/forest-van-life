@@ -177,6 +177,10 @@
     {
       "id": "curtain",
       "label": "窗簾"
+    },
+    {
+      "id": "accessories",
+      "label": "小配件"
     }
   ],
   "products": [
