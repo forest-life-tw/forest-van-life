@@ -188,6 +188,13 @@
       "images": [
         "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/products/bottomframe/1783320028152.jpg"
       ]
+    },
+    {
+      "slug": "jspacebottomframe",
+      "name": "JS中排底框",
+      "category": "bottomframe",
+      "note": "中排百變床椅的底座",
+      "images": []
     }
   ],
   "productsPage": {
