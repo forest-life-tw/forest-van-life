@@ -169,7 +169,12 @@
       ]
     }
   ],
-  "productCategories": [],
+  "productCategories": [
+    {
+      "id": "bottomframe",
+      "label": "底框"
+    }
+  ],
   "products": [
     {
       "slug": "bottomframe",
