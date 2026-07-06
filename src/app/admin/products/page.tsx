@@ -238,13 +238,13 @@ export default function ProductsAdminPage() {
                   onChange={(e) =>
                     setCats((c) => c.map((x) => (x.id === cat.id ? { ...x, icon: e.target.value } : x)))
                   }
-                  className="input w-16 shrink-0 text-center"
+                  className="input !w-14 shrink-0 text-center"
                 >
                   {ICONS.map((icon) => (
                     <option key={icon} value={icon}>{icon}</option>
                   ))}
                 </select>
-                <span className="w-24 shrink-0 font-mono text-xs text-stone-400">{cat.id}</span>
+                <span className="flex-1 truncate font-mono text-xs text-stone-400">{cat.id}</span>
                 <input
                   value={cat.label}
                   onChange={(e) =>
@@ -269,7 +269,7 @@ export default function ProductsAdminPage() {
           <select
             value={newCatIcon}
             onChange={(e) => setNewCatIcon(e.target.value)}
-            className="input w-16 shrink-0 text-center"
+            className="input !w-14 shrink-0 text-center"
           >
             {ICONS.map((icon) => (
               <option key={icon} value={icon}>{icon}</option>
