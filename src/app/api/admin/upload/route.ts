@@ -30,7 +30,10 @@ export async function POST(req: Request) {
   }
 
   try {
-    const blob = await put(filename, file, { access: "public" });
+    const blob = await put(filename, file, {
+      access: "public",
+      allowOverwrite: type === "logo",
+    });
     return NextResponse.json({ url: blob.url });
   } catch (err) {
     console.error("Blob upload error:", err);
