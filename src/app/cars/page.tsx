@@ -28,7 +28,7 @@ export default function CarsPage() {
           <Link
             key={car.slug}
             href={`/cars/${car.slug}`}
-            className="group rounded-xl border border-stone-200 bg-white p-6 transition-all hover:border-emerald-500 hover:shadow-md"
+            className="group flex h-full flex-col rounded-xl border border-stone-200 bg-white p-6 transition-all hover:border-emerald-500 hover:shadow-md"
           >
             <div className="mb-3 flex items-center gap-3">
               <span className="text-3xl">🚐</span>
@@ -39,7 +39,9 @@ export default function CarsPage() {
                 <p className="text-xs text-stone-500">{car.note}</p>
               </div>
             </div>
-            <p className="text-sm leading-relaxed text-stone-600">{car.description}</p>
+            <p className="line-clamp-3 text-sm leading-relaxed text-stone-600">
+              {car.description}
+            </p>
             <p className="mt-4 text-sm font-medium text-emerald-700">
               查看改裝建議 →
             </p>
