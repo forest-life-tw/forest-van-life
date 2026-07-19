@@ -159,12 +159,20 @@
       "model3d": "",
       "model3dItems": [
         {
-          "label": "Jspace客製模組",
+          "label": "Jspace客製模組 V1功能",
           "url": "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/j-space/model3d-1782990050851.glb"
         },
         {
-          "label": "Jspace客製模組展開",
+          "label": "Jspace客製模組 V1床面",
           "url": "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/j-space/model3d-1782991678037.glb"
+        },
+        {
+          "label": "Jspace客製模組 V2功能",
+          "url": "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/j-space/model3d-1784444156636.glb"
+        },
+        {
+          "label": "Jspace客製模組 V2床面",
+          "url": "https://dmm9356fbkaggzk1.public.blob.vercel-storage.com/cars/j-space/model3d-1784444337886.glb"
         }
       ]
     },
