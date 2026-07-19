@@ -17,7 +17,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
-          <Image src={logo} alt="森活家露營車" width={276} height={202} className="h-10 w-auto" priority unoptimized={logo.startsWith("http")} />
+          <Image src={logo} alt="森活家露營車" width={200} height={200} className="h-14 w-auto" priority unoptimized={logo.startsWith("http")} />
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
