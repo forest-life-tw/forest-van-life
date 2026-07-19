@@ -34,7 +34,8 @@ export async function POST(req: Request) {
       access: "public",
       allowOverwrite: type === "logo",
     });
-    return NextResponse.json({ url: blob.url });
+    const url = type === "logo" ? `${blob.url}?v=${Date.now()}` : blob.url;
+    return NextResponse.json({ url });
   } catch (err) {
     console.error("Blob upload error:", err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
