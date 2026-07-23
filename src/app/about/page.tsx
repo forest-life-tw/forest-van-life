@@ -3,7 +3,7 @@ import { getSiteConfig } from "@/lib/config";
 
 export const metadata = {
   title: "關於我們",
-  description: "合法廂車改裝專業廠：以法規為核心、以驗車過關為標準。",
+  description: "森活家露營車：安全施工、量身客製、品質把關為核心，每項改裝都對應道路交通安全規則條文，並協助完成監理站變更登記。",
 };
 
 export default function AboutPage() {
