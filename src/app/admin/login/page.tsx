@@ -8,23 +8,33 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [locked, setLocked] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const res = await fetch("/api/admin/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
-    if (res.ok) {
-      router.push("/admin");
-    } else {
-      setError("密碼錯誤");
+    setLocked(false);
+    try {
+      const res = await fetch("/api/admin/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        router.push("/admin");
+        return;
+      }
+      // 後端會回傳剩餘次數或鎖定時間，直接顯示給管理者看
+      const data = await res.json().catch(() => null);
+      setLocked(res.status === 429);
+      setError(data?.message || (res.status === 429 ? "登入失敗次數過多，請稍後再試" : "密碼錯誤"));
+    } catch {
+      setError("連線失敗，請稍後再試");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
@@ -41,7 +51,11 @@ export default function LoginPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  // 讓管理者鎖定期滿後不用重整頁面就能再試（真正的把關在後端）
+                  if (locked) setLocked(false);
+                }}
                 className="w-full rounded-lg border border-stone-300 px-4 py-2.5 pr-16 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
                 placeholder="請輸入密碼"
                 autoFocus
@@ -56,10 +70,18 @@ export default function LoginPage() {
               </button>
             </div>
           </div>
-          {error && <p className="text-sm text-rose-600">{error}</p>}
+          {error &&
+            (locked ? (
+              <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5">
+                <p className="text-sm font-medium text-amber-900">帳號已暫時鎖定</p>
+                <p className="mt-1 text-sm text-amber-800">{error}</p>
+              </div>
+            ) : (
+              <p className="text-sm text-rose-600">{error}</p>
+            ))}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || locked}
             className="w-full rounded-lg bg-emerald-700 py-2.5 text-sm font-medium text-white transition-colors hover:bg-emerald-800 disabled:opacity-50"
           >
             {loading ? "登入中..." : "登入"}
