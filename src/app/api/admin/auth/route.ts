@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAdminToken, COOKIE_NAME } from "@/lib/auth";
+import { createAdminToken, COOKIE_NAME, isJwtSecretConfigured } from "@/lib/auth";
 import { check, hit, reset, clientKey, formatWait } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
@@ -22,20 +22,24 @@ export async function POST(req: Request) {
       );
     }
 
-    const expected = process.env.ADMIN_PASSWORD;
-    if (!expected) {
-      // 沒設定密碼就不能放行——否則送出空密碼會意外通過比對。
-      // 這是環境設定問題不是密碼錯誤，訊息要講清楚，否則管理者會一直重打密碼。
-      console.error("[admin/auth] ADMIN_PASSWORD 未設定，拒絕所有登入");
+    // 缺任一個都不能放行。ADMIN_PASSWORD 缺失時若不擋，送出不含 password
+    // 欄位的請求會因為 undefined === undefined 而通過比對；ADMIN_JWT_SECRET
+    // 缺失則簽不出憑證。兩者都是環境設定問題不是密碼錯誤，訊息要講清楚，
+    // 否則管理者會以為自己打錯而一直重打。
+    const missing: string[] = [];
+    if (!process.env.ADMIN_PASSWORD) missing.push("ADMIN_PASSWORD");
+    if (!isJwtSecretConfigured()) missing.push("ADMIN_JWT_SECRET");
+    if (missing.length > 0) {
+      console.error(`[admin/auth] ${missing.join("、")} 未設定，拒絕所有登入`);
       return NextResponse.json(
         {
           error: "NOT_CONFIGURED",
-          message:
-            "此環境尚未設定管理員密碼（ADMIN_PASSWORD），無法登入。請到 Vercel 專案設定的 Environment Variables 補上，並確認有勾選目前這個環境。",
+          message: `此環境尚未設定 ${missing.join("、")}，無法登入。請到 Vercel 專案設定的 Environment Variables 補上，並確認有勾選目前這個環境。`,
         },
         { status: 500 }
       );
     }
+    const expected = process.env.ADMIN_PASSWORD;
 
     const { password } = await req.json();
 
