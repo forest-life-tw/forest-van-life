@@ -24,9 +24,17 @@ export async function POST(req: Request) {
 
     const expected = process.env.ADMIN_PASSWORD;
     if (!expected) {
-      // 沒設定密碼就不能放行——否則送出空密碼會意外通過比對
+      // 沒設定密碼就不能放行——否則送出空密碼會意外通過比對。
+      // 這是環境設定問題不是密碼錯誤，訊息要講清楚，否則管理者會一直重打密碼。
       console.error("[admin/auth] ADMIN_PASSWORD 未設定，拒絕所有登入");
-      return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: "NOT_CONFIGURED",
+          message:
+            "此環境尚未設定管理員密碼（ADMIN_PASSWORD），無法登入。請到 Vercel 專案設定的 Environment Variables 補上，並確認有勾選目前這個環境。",
+        },
+        { status: 500 }
+      );
     }
 
     const { password } = await req.json();
