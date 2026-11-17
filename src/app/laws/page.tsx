@@ -1,11 +1,9 @@
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { listDocs } from "@/lib/markdown";
 import { getSiteConfig } from "@/lib/config";
 
-export const metadata = {
-  title: "常見問題 Knowhow",
-  description: "改裝前你需要知道的事：設計構思、法規制度、各種常見問題解答。",
-};
+export const metadata = pageMetadata("/laws", "常見問題 Knowhow", "改裝前你需要知道的事：設計構思、法規制度、各種常見問題解答。");
 
 const DEFAULT_TABS = [
   { id: "laws", label: "法規制度" },

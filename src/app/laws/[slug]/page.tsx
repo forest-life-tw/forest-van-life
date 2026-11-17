@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getKnowhowDoc, listDocs } from "@/lib/markdown";
@@ -13,10 +14,7 @@ export async function generateMetadata(props: PageProps<"/laws/[slug]">) {
   const { slug } = await props.params;
   const result = await getKnowhowDoc(slug);
   if (!result) return { title: "找不到文章" };
-  return {
-    title: result.doc.title,
-    description: result.doc.description,
-  };
+  return pageMetadata(`/laws/${slug}`, result.doc.title, result.doc.description ?? "", "/og-image.png", true);
 }
 
 const LIGHT_MAP = {
@@ -68,6 +66,9 @@ export default async function LawArticlePage(props: PageProps<"/laws/[slug]">) {
         {doc.updated && (
           <p className="mt-3 text-xs text-stone-400">最後更新：{doc.updated}</p>
         )}
+        <p className="mt-3 text-sm text-stone-600">內容維護：<Link href="/about#team" className="underline underline-offset-4">森活家施工團隊</Link></p>
+        {doc.author && <p className="mt-2 text-sm text-stone-600">作者：{doc.author}</p>}
+        {doc.reviewer && doc.reviewedAt && <p className="mt-2 text-sm text-stone-600">專業覆核：{doc.reviewer} · {doc.reviewedAt}</p>}
       </header>
 
       <div

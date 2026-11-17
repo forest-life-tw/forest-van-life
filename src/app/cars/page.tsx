@@ -1,10 +1,8 @@
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { getSiteConfig } from "@/lib/config";
 
-export const metadata = {
-  title: "車型專區",
-  description: "我們擅長改裝的車型：Hyundai Staria、Toyota Hiace、Opel Combo、VW Caddy、CMC J-Space。",
-};
+export const metadata = pageMetadata("/cars", "車型專區", "我們擅長改裝的車型：Hyundai Staria、Toyota Hiace、Opel Combo、VW Caddy、CMC J-Space。");
 
 export default function CarsPage() {
   const config = getSiteConfig();

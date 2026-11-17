@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/config";
@@ -15,7 +16,7 @@ export async function generateMetadata(props: PageProps<"/cars/[slug]">) {
   const config = getSiteConfig();
   const car = config.cars.find((c) => c.slug === slug);
   if (!car) return { title: "找不到車型" };
-  return { title: `${car.name} 改裝指南`, description: car.description || car.note };
+  return pageMetadata(`/cars/${slug}`, `${car.name} 改裝指南`, car.description || car.note, car.imageGroups?.[0]?.images[0] || car.images[0] || "/og-image.png");
 }
 
 export default async function CarPage(props: PageProps<"/cars/[slug]">) {

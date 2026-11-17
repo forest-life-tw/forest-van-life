@@ -12,7 +12,7 @@ export default function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2">
-              <Image src={logo} alt="森活家露營車" width={276} height={202} className="h-10 w-auto" unoptimized={logo.startsWith("http")} />
+              <Image src={logo} alt="森活家露營車" width={80} height={80} sizes="40px" className="h-10 w-auto" />
             </div>
             <p className="mt-3 max-w-md text-sm leading-6 text-stone-600">
               專注貨車、客貨車的合法露營改裝。所有施作對應法規依據，從座位變更、車內木作、副電池到駐車冷氣，每一項都查得到法源、過得了驗車。
@@ -20,7 +20,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-3 text-sm font-semibold text-stone-900">內容導覽</h4>
+            <h2 className="mb-3 text-sm font-semibold text-stone-900">內容導覽</h2>
             <ul className="space-y-2 text-sm">
               <li><Link href="/laws" className="text-stone-600 hover:text-emerald-700">常見問題 Knowhow</Link></li>
               <li><Link href="/cars" className="text-stone-600 hover:text-emerald-700">車型專區</Link></li>
@@ -29,7 +29,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-3 text-sm font-semibold text-stone-900">聯繫</h4>
+            <h2 className="mb-3 text-sm font-semibold text-stone-900">聯繫</h2>
             <ul className="space-y-2 text-sm text-stone-600">
               {contact.address && <li>地址：{contact.address}</li>}
               {contact.businessHours && <li>營業時間：{contact.businessHours}</li>}

@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/config";
@@ -14,7 +15,7 @@ export async function generateMetadata(props: PageProps<"/products/[slug]">) {
   const config = getSiteConfig();
   const product = config.products.find((p) => p.slug === slug);
   if (!product) return { title: "找不到配件" };
-  return { title: `${product.name}｜改裝配件`, description: product.note };
+  return pageMetadata(`/products/${slug}`, `${product.name}｜改裝配件`, product.note, product.images[0] || "/og-image.png");
 }
 
 export default async function ProductPage(props: PageProps<"/products/[slug]">) {

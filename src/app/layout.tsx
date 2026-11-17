@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { SITE_URL as BASE_URL } from "@/lib/metadata";
 import "./globals.css";
 
 const notoTC = Noto_Sans_TC({
@@ -11,8 +12,6 @@ const notoTC = Noto_Sans_TC({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
-
-const BASE_URL = "https://forest-van-life.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),

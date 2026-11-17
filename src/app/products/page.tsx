@@ -1,11 +1,9 @@
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import Image from "next/image";
 import { getSiteConfig } from "@/lib/config";
 
-export const metadata = {
-  title: "改裝配件",
-  description: "床墊、木作、駐車冷氣、電力系統等改裝配件項目介紹。",
-};
+export const metadata = pageMetadata("/products", "改裝配件", "床墊、木作、駐車冷氣、電力系統等改裝配件項目介紹。");
 
 export default async function ProductsPage({
   searchParams,

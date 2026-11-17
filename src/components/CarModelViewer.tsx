@@ -3,6 +3,7 @@ import React from "react";
 import Script from "next/script";
 
 declare module "react" {
+  // eslint-disable-next-line @typescript-eslint/no-namespace -- React 自訂元素型別需要擴充 JSX namespace。
   namespace JSX {
     interface IntrinsicElements {
       "model-viewer": React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {

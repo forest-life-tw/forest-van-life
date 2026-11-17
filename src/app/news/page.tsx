@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import Image from "next/image";
 import { getNewsItems, getYoutubeThumbnail } from "@/lib/news";
 import type { NewsType } from "@/lib/news";
@@ -32,10 +33,7 @@ const TYPE_CONFIG: Record<
   },
 };
 
-export const metadata = {
-  title: "露營大小事 | 森活家露營車",
-  description: "露營界值得關注的貼文、影片與產業動態，由森活家策展整理。",
-};
+export const metadata = pageMetadata("/news", "露營大小事", "露營界值得關注的貼文、影片與產業動態，由森活家策展整理。");
 
 export default function NewsPage() {
   const items = getNewsItems();

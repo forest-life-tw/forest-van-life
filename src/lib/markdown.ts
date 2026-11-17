@@ -18,6 +18,9 @@ export type DocMeta = {
   tags?: string[];
   updated?: string;
   light?: "green" | "yellow" | "red";
+  author?: string;
+  reviewer?: string;
+  reviewedAt?: string;
 };
 
 export type Doc = DocMeta & {
@@ -58,6 +61,9 @@ export function listDocs(category: DocCategory): DocMeta[] {
       tags: data.tags,
       updated: normalizeUpdated(data.updated),
       light: data.light,
+      author: typeof data.author === "string" ? data.author : undefined,
+      reviewer: typeof data.reviewer === "string" ? data.reviewer : undefined,
+      reviewedAt: normalizeUpdated(data.reviewedAt),
     } satisfies DocMeta;
   });
   return docs.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
@@ -92,6 +98,9 @@ export async function getDoc(
     tags: data.tags,
     updated: normalizeUpdated(data.updated),
     light: data.light,
+    author: typeof data.author === "string" ? data.author : undefined,
+    reviewer: typeof data.reviewer === "string" ? data.reviewer : undefined,
+    reviewedAt: normalizeUpdated(data.reviewedAt),
     html: String(processed),
     raw: content,
   };

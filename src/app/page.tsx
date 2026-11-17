@@ -2,10 +2,25 @@ import Link from "next/link";
 import { listDocs } from "@/lib/markdown";
 import { getSiteConfig } from "@/lib/config";
 import LocalBusinessJsonLd from "@/components/LocalBusinessJsonLd";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata("/", "露營車客製改裝與配件安裝", "森活家露營車，依車型與使用方式討論木作、床椅、軟裝、設備配置與單項改裝。");
 
 export default function Home() {
-  const laws = listDocs("laws").slice(0, 3);
   const config = getSiteConfig();
+  const categories = config.articleCategories?.map(category => category.id) ?? ["laws", "design", "others"];
+  const seen = new Set<string>();
+  const laws = categories.flatMap(category => listDocs(category)).filter(doc => {
+    if (seen.has(doc.slug)) return false;
+    seen.add(doc.slug);
+    return true;
+  }).sort((a, b) => {
+    const timestamp = (value?: string) => {
+      const time = value ? Date.parse(value) : 0;
+      return Number.isFinite(time) ? time : 0;
+    };
+    return timestamp(b.updated) - timestamp(a.updated) || a.slug.localeCompare(b.slug);
+  }).slice(0, 3);
   const { heroTitle, heroSubtitle, features } = config.homepage;
   const cars = config.cars;
 
@@ -51,7 +66,7 @@ export default function Home() {
               className="rounded-xl border border-stone-200 bg-white p-6 transition-shadow hover:shadow-md"
             >
               <div className="mb-3 text-3xl">{f.icon}</div>
-              <h3 className="mb-2 text-lg font-semibold text-stone-900">{f.title}</h3>
+              <h2 className="mb-2 text-lg font-semibold text-stone-900">{f.title}</h2>
               <p className="text-sm leading-relaxed text-stone-600">{f.desc}</p>
             </div>
           ))}

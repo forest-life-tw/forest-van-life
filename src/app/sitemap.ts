@@ -1,8 +1,8 @@
 import { MetadataRoute } from "next";
 import { getSiteConfig } from "@/lib/config";
 import { listDocs } from "@/lib/markdown";
+import { SITE_URL as BASE_URL } from "@/lib/metadata";
 
-const BASE_URL = "https://forest-van-life.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const config = getSiteConfig();
@@ -16,11 +16,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/about`, priority: 0.6, changeFrequency: "monthly" },
   ];
 
-  const lawDocs = [
-    ...listDocs("laws"),
-    ...listDocs("design"),
-    ...listDocs("others"),
-  ].map((doc) => ({
+  // Keep published categories aligned with the article list and detail resolver.
+  const categories = config.articleCategories?.map((category) => category.id) ?? ["laws", "design", "others"];
+  const docs = categories.flatMap((category) => listDocs(category));
+  const seen = new Set<string>();
+  const uniqueDocs = docs.filter(doc => {
+    if (seen.has(doc.slug)) return false;
+    seen.add(doc.slug);
+    return true;
+  });
+  const lawDocs = uniqueDocs.map((doc) => ({
     url: `${BASE_URL}/laws/${doc.slug}`,
     lastModified: doc.updated ? new Date(doc.updated) : undefined,
     priority: 0.85,
